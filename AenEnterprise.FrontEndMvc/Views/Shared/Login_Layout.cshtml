@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/customcss/customform.css" rel="stylesheet" />
+    <link href="~/customcss/dashboard.css" rel="stylesheet" />
+    <link href="~/customcss/table.css" rel="stylesheet" />
+    <link href="~/customcss/loadingprogress.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/34a59c0339.js" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="~/script/jquery-3.7.1.min.js"></script>
+           
+    <script>
+        $(document).ready(function () {
+            const token = localStorage.getItem('Bearer ');
+            const currentUrl = window.location.href;
+
+            // Check if the token is null or empty
+            if (isValidToken(token)) {
+                // Only redirect if not already on the SalesManagement page
+                if (!currentUrl.includes('@Url.Action("Index", "SalesManagement")')) {
+                    window.location.href = '@Url.Action("Index", "SalesManagement")';
+                }
+            }
+            else {
+                // Only redirect if not already on the Home page
+                if (!currentUrl.includes('@Url.Action("Index", "Home")')) {
+                    window.location.href = '@Url.Action("Index", "Home")';
+                }
+            }
+        });
+
+        function isValidToken(token) {
+            // Check if the token is a string and matches the JWT pattern
+            if (typeof token !== 'string') {
+                return false;
+            }
+
+            // Regular expression to match JWT format
+            const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
+            if (!jwtPattern.test(token)) {
+                return false;
+            }
+
+            // Split the token into its parts
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                return false;
+            }
+
+            // Decode the payload (the second part of the JWT)
+            const payload = parts[1];
+            const decodedPayload = JSON.parse(atob(payload)); // Decode base64url to JSON
+
+            // Check expiration (if exists)
+            if (decodedPayload.exp) {
+                const expirationDate = new Date(decodedPayload.exp * 1000);
+                if (expirationDate < new Date()) {
+                    return false; // Token has expired
+                }
+            }
+
+            return true; // Valid token
+        }
+    </script>
+
+ 
+</head>
+
+<body>
+    <div class="container-login">
+        @RenderBody()
+    </div>
+</body>
+</html>

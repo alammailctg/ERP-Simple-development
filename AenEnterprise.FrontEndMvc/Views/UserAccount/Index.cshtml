@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+
+<script src="~/script/jquery-jtemplates.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Fetch all users and user roles on page load
+        GetAllUsers();
+       
+        GetOnlineUser();
+    });
+    
+   async function GetAllUsers() {
+        const token = localStorage.getItem('Bearer ');
+        $.ajax({
+            url: '/api/authentication/GetAllUsers', // Your endpoint
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(data) {
+                if (data) {
+                    // Use jTemplate to bind data and render it in the user list table
+                    console.log(data); // Log the response data for debugging
+                    $("#htmUserList").setTemplate($("#userTemp").html());
+                    $("#htmUserList").processTemplate(data);
+                } else {
+                    console.log("No data received.");
+                }
+            },
+            error: function(xhr, textstatus, errorthrown) {
+                console.error('Error fetching users:', errorthrown);
+            }
+        });
+    }
+
+    // async function GetUserRole() {
+    //     const token = localStorage.getItem('Bearer ');
+    //     $.ajax({
+    //         url: '/api/authentication/GetUserRole', // Your endpoint to fetch roles
+    //         method: 'GET',
+    //         headers: {
+    //             'Authorization': 'Bearer ' + token
+    //         },
+    //         success: function (data) {
+    //             if (data) {
+    //                 // Render roles in the template
+    //                 console.log(data); // Log for debugging
+    //                 alert(JSON.stringify(data));
+    //                 $("#htmUserRole").setTemplate($("#userRoleTemp").html());
+    //                 $("#htmUserRole").processTemplate(data);
+    //             } else {
+    //                 console.log("No data received.");
+    //             }
+    //         },
+    //         error: function (xhr, textstatus, errorthrown) {
+    //             console.error('Error fetching user roles:', errorthrown);
+    //         }
+    //     });
+    // }
+
+    async function GetOnlineUser() {
+        const token = localStorage.getItem('Bearer ');
+        $.ajax({
+            url: '/api/authentication/GetOnlineUsers',  // Your API endpoint
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function (data) {
+                if (data) {
+                    console.log(data); // Log the response data for debugging
+                    // Process the template and bind the data
+                    $("#htmOnlineUserList").setTemplate($("#onlineUserTemp").html());
+                    $("#htmOnlineUserList").processTemplate(data);
+                } else {
+                    console.log("No data received.");
+                }
+            },
+            error: function (xhr, textstatus, errorthrown) {
+                console.error('Error fetching users:', errorthrown);
+            }
+        });
+    }
+
+</script>
+
+<div class="button-container">
+    <a href="#" class="responsive-anchor">Responsive Anchor</a>
+    <button class="responsive-button">Responsive Button</button>
+</div>
+
+
+
+    <div class="container-main"><br />
+    <div class="table-wrapper">
+
+        <a class="responsive-anchor" href="@Url.Action("UserRegistration","Home")" class="btn btn-info btn-lg">Create New User Account</a>
+    </div>
+         <h3>User Account Details</h3> <br />
+        
+      
+
+
+
+    
+          
+        <h4>User List</h4>
+           
+               
+       
+            <div class="table-wrapper">
+                <table class="responsive-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Token Created</th>
+                    <th>Token Expires</th>
+                </tr>
+            </thead>
+            <tbody id="htmUserList">
+                <!-- User list will be rendered here using jTemplates -->
+            </tbody>
+        </table>
+        </div>
+        
+       
+        <h4>Online user</h4>
+        
+
+           
+                <div class="table-wrapper">
+                    <table class="responsive-table">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Login Time</th>
+                        <th>Expiration Time</th>
+                    </tr>
+                </thead>
+                <tbody id="htmOnlineUserList">
+                    <!-- User data will be rendered here using jTemplates -->
+                </tbody>
+            </table>
+        </div>
+</div>
+    
+
+
+
+<!-- jTemplate for UserRoles with Checkboxes -->
+    <script type="text/html" id="userRoleTemp">
+        {#foreach $T.userRoles as record}
+            <tr>
+                <td>{$T.record.userName}</td>
+                <td>
+                    {#foreach $T.record.allRoles as role} <!-- Iterate through all available roles -->
+                        <input type="checkbox" name="roleIds" value="{$T.role.roleId}"
+                        {if $T.record.assignedRoleIds.indexOf($T.role.roleId) > -1}checked{/if} />
+                        {$T.role.roleName}<br />
+                    {#/for}
+                </td>
+            </tr>
+        {#/for}
+    </script>
+
+
+
+ 
+
+ 
+
+
+<script id="onlineUserTemp" type="text/html">
+      {#foreach $T.onlineUsers as record}
+    <tr>
+        <td>{$T.record.username}</td>
+        <td>{$T.record.loginTime}</td>
+        <td>{$T.record.expirationTime}</td>
+    </tr>
+     {#/for}
+</script>
+
+
+<!-- jTemplate for UserRoles -->
+<script type="text/html" id="userRoleTemp">
+    {#foreach $T.userRoles as record}
+        <tr>
+            <td>{$T.record.userName}</td>
+            <td>
+                {#foreach $T.record.roleNames as roleName}  <!-- Iterate through RoleNames -->
+                               <input class="roleCheckbox" type="checkbox" value="{$T.id}"> {$T.roleName} <br>  <br />  <!-- Display each role name on a new line -->
+                {#/for}
+            </td>
+        </tr>
+    {#/for}
+</script>
+
+
+
+
+
+<!-- jTemplate for UserViews -->
+<script type="text/html" id="userTemp">
+    {#foreach $T.users as user}
+        <tr>
+            <td>{$T.user.id}</td>
+            <td>{$T.user.username}</td>
+            <td>{$T.user.password}</td>
+            <td>{$T.user.tokenCreated}</td>
+            <td>{$T.user.tokenExpires}</td>
+        </tr>
+    {#/for}
+</script>

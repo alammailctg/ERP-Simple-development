@@ -1,0 +1,250 @@
+﻿
+@{
+    ViewData["Title"] = "UnApproveDeliveryOrder";
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+<h3>Unapprove delivery order</h3>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //ifgetSalesOrders will mention top of the setDefaultDates it will show error toISOString();
+        setDefaultDates();
+        getAllDeliveryOrder(1, 6);
+
+        // $('.paging').on('click', '.page-link', function () {
+        //     const pageNumber = $(this).index() + 1; // Retrieve the page number from the clicked element
+        //     // getSalesOrders(pageNumber, 3);
+        // });
+
+        $("#checkedAll").change(function () {
+            if (this.checked) {
+                $(".checkSingle").each(function () {
+                    this.checked = true;
+                })
+            } else {
+                $(".checkSingle").each(function () {
+                    this.checked = false;
+                })
+            }
+        });
+        $(".checkSingle").click(function () {
+            if ($(this).is(":checked")) {
+                var isAllChecked = 0;
+                $(".checkSingle").each(function () {
+                    if (!this.checked)
+                        isAllChecked = 1;
+                })
+                if (isAllChecked == 0) { $("#checkedAll").prop("checked", true); }
+            }
+            else {
+                $("#checkedAll").prop("checked", false);
+            }
+        });
+    });
+
+    async function getAllDeliveryOrder(pageNumber, pageSize) {
+        const dateFromInput = new Date(document.getElementById('dateFromInput').value).toISOString();
+        const dateToInput = new Date(document.getElementById('dateToInput').value).toISOString();
+        const criteriaName = document.getElementById('txtCriteriaName').value;
+        await GetAllDelivery(pageNumber, pageSize, dateFromInput, dateToInput, criteriaName);
+    }
+
+    async function GetAllDelivery(pageNumber, pageSize, dateFrom, dateTo, criteriaName) {
+        try {
+            var jsonData = {
+                DateFrom: dateFrom,
+                DateTo: dateTo,
+                PageNumber: pageNumber,
+                PageSize: pageSize,
+                CriteriaName: criteriaName
+            }
+
+            var url = 'DO/GetAllUnApproveDeliveryOrder';
+            var dOResponse = await getAllDataWithParameter(url, jsonData);
+
+            // Log the response data for debugging
+            console.log(dOResponse);
+
+            // Handle total items and pagination
+            $(".totalItemsFound").empty();
+            $(".totalItemsFound").append(`Items found - ${dOResponse.totalCount} / ${dOResponse.totalPages} Pages`);
+
+            // Compile the Handlebars template
+            var source = document.getElementById("deliveryOrdersTemplate").innerHTML;
+            var template = Handlebars.compile(source);
+
+            // Process the template with the data
+            var html = template(dOResponse); // assuming 'items' contains the list of sales orders
+
+            // Inject the generated HTML into the DOM
+            document.getElementById("deliveryOrderElement").innerHTML = html;
+
+            // Handle pagination
+            paginationCallBackForDeliveryList(dOResponse.totalPages, pageNumber);
+            
+        } catch (error) {
+            console.error("Error fetching data from the server: " + error.message);
+        }
+    }
+
+    async function ChangeApprovalStatusByChecked() {
+        var chkChecked = $("input[name='checkSingle']:checked").length;
+        if (chkChecked >= 1) {
+            var statusId = $("#ddlStatusId").val(); // Retrieve the selected approval ID
+            var postArr = [];
+
+            $("input[name='checkSingle']:checked").each(function () {
+                var deliveryOrderItemId = $(this).val();
+                var formrequests = {
+                    StatusId: statusId,
+                    DeliveryOrderItemId: deliveryOrderItemId
+                };
+                postArr.push(formrequests);
+            });
+
+            try {
+                await $.ajax({
+                    url: '/api/DO/ApproveDeliveryOrder',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify(postArr),
+                    contentType: 'application/json; charset=utf-8',
+                    success: async function (data) {
+                        console.log(data);
+                        const pageSize = 6;
+                        const currentPage = parseInt($('.page-link.active').text().trim());
+                        getAllDeliveryOrder(currentPage, 6);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.error("Error updating approval status: " + textStatus + " - " + errorThrown);
+                        // Handle error response as needed
+                    }
+                });
+            } catch (error) {
+                console.error("Error updating approval status: " + error.message);
+            }
+        } else {
+            alert("Please select sales orders to update approval status!");
+        }
+    }
+
+</script>
+
+<div class="container salesOrder-container mt-4">
+
+    <!-- Date Range and Search Section -->
+    <div class="row mb-3 align-items-end custom-row">
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateFromInput" class="form-label">From Date</label>
+            <input type="date" id="dateFromInput" class="form-control" placeholder="From Date">
+        </div>
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateToInput" class="form-label">To Date</label>
+            <input type="date" id="dateToInput" class="form-control" placeholder="To Date">
+        </div>
+        <div class="col-md-3 col-sm-8 mb-2 mb-md-0">
+            <label for="txtCriteriaName" class="form-label">Search Order Items</label>
+            <input type="search" id="txtCriteriaName" class="form-control" placeholder="Search Order Items">
+        </div>
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-primary w-100" onclick="Javascript: getAllUnApprovedDeliveryOrder(1,6)">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-secondary w-100" onclick="resetFilters()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="row mb-3 custom-row">
+        <div class="col-10">
+            <div class="col-md-3 col-sm-6 d-flex flex-row gap-2" style=" float:right">
+                <select id="ddlStatusId" class="form-select">
+                    <option value="2">Approve</option>
+                    <option value="3">Reject</option>
+                </select>
+                <button class="btn btn-secondary ms-auto" onclick="Javascript:ChangeApprovalStatusByChecked()">
+                    Change
+                </button>
+            </div>
+            <div class="totalItemsFound"></div>
+        </div>
+        <div class="col-1 text-end mt-3 mt-md-0" style="float:right">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input dark-checkbox" id="checkedAll">
+                <label class="form-check-label" for="checkedAll">All</label>
+            </div>
+        </div>
+        <br>
+        <br>
+        <hr>
+        <div id="deliveryOrderElement"></div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center paging"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script id="deliveryOrdersTemplate" type="text/x-handlebars-template">
+        {{#each deliveryOrders as |record|}}
+        <!-- Sales Order Row -->
+        <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+            <div class="col-md-2">
+                <a href="/SalesOrderReport/GetSalesOrderById?salesOrderId={{record.id}}">{{record.deliveryOrderNo}}</a>
+               
+            </div>
+            <div class="col-md-3">{{record.customerName}}</div>
+            {{record.createdDate}}
+            <div class="col-md-4 text-end">
+                <!-- Additional Action Buttons or Info can be placed here -->
+            </div>
+            <div id="salesOrderIdHidden" style="display:none">{{record.id}}</div>
+        </div>
+
+        <!-- Order Items Container -->
+        <div class="orderItems-container">
+            <div class="row orderitem-cell-data-container p-2" style="font-weight:normal; font:small; color:darkgray; background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-2">Product name</div>
+                <div class="col-md-1">Price</div>
+                <div class="col-md-2">Quantity</div>
+                @* <div class="col-md-2">Dispatch Quantity</div> *@
+                
+                <div class="col-md-2">Amount</div>
+            </div>
+
+          {{#each record.deliveryOrderItems as |deli|}}
+            <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-1" style="display:none">
+                    <span id="spnInvoiceItemId">{{inv.id}}</span>
+                    <span id="spnInvoiceId">{{inv.invoiceId}}</span>
+                </div>
+                <div class="col-md-2">  {{deli.productName}}</div>
+                <div class="col-md-1"> {{deli.price}}</div>
+                <div class="col-md-2"> {{deli.deliveryQuantity}} {{inv.unitName}}</div>
+                <div class="col-md-2">{{deli.deliveryAmount}}</div>
+                
+                <div class="col-md-1">
+                    <div class="form-check">
+                        <input type="checkbox" name="checkSingle" value="{{deli.id}}" class="checkSingle" id="chkSingle" />
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+    </script>
+
+</div>
+                

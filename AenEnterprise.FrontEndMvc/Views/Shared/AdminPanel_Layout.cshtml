@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AEN Enterprise</title>
+    
+    <!-- Bootstrap -->
+    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js" integrity="sha512-E1dSFxg+wsfJ4HKjutk/WaCzK7S2wv1POn1RRPGh8ZK+ag9l244Vqxji3r6wgz9YBf6+vhQEYJZpSjqWFPg9gg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
+    <script src="https://kit.fontawesome.com/34a59c0339.js" crossorigin="anonymous"></script>
+   
+    <script src="~/script/handlebars.min.js"></script>
+    <link href="~/customcss/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/script/bootstrap.bundle.min.js"></script>
+    <script src="~/script/ajaxscript.js"></script>
+    <script src="~/script/defaultdateformat.js"></script>
+    <script src="~/script/jquery-jtemplates.js"></script>
+    <script src="~/script/jquery-3.7.1.min.js"></script>
+    <link href="~/css/elements.css" rel="stylesheet" />
+    <link href="~/css/navbar.css" rel="stylesheet" />
+    <script src="~/script/paginationscript.js"></script>
+    <script>
+        $(document).ready(function () {
+            getUserName();
+
+            const storedToken = localStorage.getItem("Bearer ");
+
+            // Logout function
+            async function LogOut() {
+                const token = localStorage.getItem("Bearer ");
+                if(isValidToken(token))
+                {
+                     $.ajax({
+                    url: "/api/Authentication/logout",
+                    type: "post",
+                    contentType: "application/json;charset-utf-8",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function () {
+                        localStorage.removeItem("Bearer ");
+                        localStorage.removeItem("roles");
+                        window.location.href = "/";
+                    },
+                    error: function () {
+                        alert("Error logging out.");
+                    }
+                });
+                }
+                else
+                {
+                      window.location.href = "/";
+                }
+            }
+               
+        
+
+            // Fetch and display the user"s name
+            async function getUserName() {
+
+                const token = localStorage.getItem("Bearer ");
+                 if(isValidToken(token))
+                {
+                    $.ajax({
+                    url: window.location.origin + "/api/Authentication/GetUserName",
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function (response) {
+                        $("#currentUserName").text(response);
+                    },
+                    error: function () {
+                        alert("Error fetching data from the server.");
+                    }
+                });
+                }
+                else
+                {
+                    window.location.href = "/";
+                }
+            }
+
+            $("#logoutButton").on("click", LogOut);
+        });
+
+                function isValidToken(token) {
+            // Check if the token is a string and matches the JWT pattern
+            if (typeof token !== 'string') {
+                return false;
+            }
+
+            // Regular expression to match JWT format
+            const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
+            if (!jwtPattern.test(token)) {
+                return false;
+            }
+
+            // Split the token into its parts
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                return false;
+            }
+
+            // Decode the payload (the second part of the JWT)
+            const payload = parts[1];
+            const decodedPayload = JSON.parse(atob(payload)); // Decode base64url to JSON
+
+            // Check expiration (if exists)
+            if (decodedPayload.exp) {
+                const expirationDate = new Date(decodedPayload.exp * 1000);
+                if (expirationDate < new Date()) {
+                    return false; // Token has expired
+                }
+            }
+
+            return true; // Valid token
+        }
+
+        // Retrieve token from localStorage
+        const token = localStorage.getItem("Bearer ");
+        if (isValidToken(token)) {
+            console.log("The token is valid.");
+        } else {
+            console.log("The token is not valid.");
+        }
+
+
+    </script>
+    
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">AEN Enterprise</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Sales
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("CreateSalesOrder", "SalesManagement")">Create Order</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("ApprovedSalesOrders", "SalesManagement")">Create Invoice</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("ApprovedInvoice", "SalesManagement")">Create Delivery Order</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("ApproveDeliveryOrder", "SalesManagement")">Create Dispatch</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Management
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("UnApproveSalesOrders", "SalesManagement")">Approve Sales Orders</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("UnApproveInvoice", "SalesManagement")">Approve Invoice</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("UnApproveDeliveryOrder", "SalesManagement")">Approve Delivery Order</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("DispatchedList", "SalesManagement")">Dispatched Summary</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Inventory
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="inventoryDropdown">
+                            <li><a class="dropdown-item" href="AdminCategory">Category</a></li>
+                            <li><a class="dropdown-item" href="AdminProduct">Product</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Users
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="usersDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Index", "UserAccount")">User</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("AssignRole", "UserAccount")">Role</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Report
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="usersDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Report", "SalesManagement")">Sales Report</a></li>
+                            <li><a class="dropdown-item" href="@Url.Action("AssignRole", "UserAccount")">Role</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text me-2" id="currentUserName"></span>
+                <button id="logoutButton" class="logout-button">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+﻿.custom-row {
+    background-color: #f0f0f0; /* Light gray background */
+    border: 1px solid lightgray; /* Light gray border */
+    color: #343a40; /* Dark gray text color */
+    padding: 10px; /* Padding for the row */
+}
+
+/* New CSS class for the checkbox */
+.dark-checkbox {
+    border: 1px solid #343a40; /* Dark gray border */
+    border-radius: 2px; /* Optional: add some radius for styling */
+    padding: 2px; /* Optional: padding around the checkbox */
+    background-color: #f0f0f0;
+}

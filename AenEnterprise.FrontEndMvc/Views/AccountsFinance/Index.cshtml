@@ -1,0 +1,474 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+<script src="~/script/handlebars.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        GetAccountsAll();
+
+    });
+    async function getJournalEntryDetailsByRedis() {
+        var url = 'PaymentReceipt/GetJournalEntryDetailsByRedis';
+        var successCallback = function (data) {
+            renderJournalEntry(data.journalEntry)
+            console.log(data.journalEntry)
+            alert(JSON.stringify(data))
+        };
+        await getByData(url, successCallback);
+    }
+    async function GetRedisPaymentId() {
+        var url = 'PaymentReceipt/GetPaymentId';
+        var successCallback = function (data) {
+            return data;
+        };
+        await getByData(url, successCallback);
+    }
+    async function GetRedisJournalEntryId() {
+        var url = 'PaymentReceipt/GetJournalEntryId';
+        var successCallback = function (data) {
+
+            return data;
+        };
+        await getByData(url, successCallback);
+    }
+    async function GetCustomersAll() {
+        var url = 'Customer/AllCustomer';
+        var successCallback = function (data) {
+            $("#ddlCustomerId").setTemplate($("#customersTemp").html());
+            $("#ddlCustomerId").processTemplate(data);
+        };
+        await getByData(url, successCallback);
+    }
+    async function GetInvoiceAll() {
+        var url = 'Invoice/get-all-invoice';
+        var successCallback = function (data) {
+            $("#ddlInvoiceId").setTemplate($("#invoicesTemp").html());
+            $("#ddlInvoiceId").processTemplate(data);
+        };
+        await getByData(url, successCallback);
+    }
+    async function GetAccountsAll() {
+        var url = 'GeneralLedger/all-accounts';
+        var successCallback = function (data) {
+            $("#ddlAccountId").setTemplate($("#accountsTemp").html());
+            $("#ddlAccountId").processTemplate(data);
+        };
+        await getByData(url, successCallback);
+    }
+    async function depositCustomerPayment() {
+        var customerId = $("#ddlCustomerId").val();
+        var paymentDate = new Date($("#txtPaymentDate").val()).toISOString();
+        var description = $("#txtDescription").val();
+        var accountId = $("#ddlAccountId").val();
+        var journalEntryNo = $("#txtJournalEntryNo").val();
+        var referenceNumber = $("#txtReferenceNumber").val();
+        var invoice = $("#ddlInvoiceId").val();
+        var debitAmount = $("#txtDebitAmount").val();
+        var creditAmount = $("#txtCreditAmount").val();
+        var journalName = $("#txtJournalName").val();
+        var journalLineDescription = $("#txtJournalLineComments").val();
+
+        var jsonData = {
+            PaymentDate: paymentDate,
+            CustomerId: customerId,
+            Description: description,
+            AccountId: accountId,
+            IsDebit: isDebit,
+            InvoiceId: invoice,
+            ReferenceNumber: referenceNumber,
+            DebitAmount: debitAmount,
+            CreditAmount: creditAmount,
+            JournalLineDescription:journalLineDescription,
+            JournalEntryNo: journalEntryNo
+        };
+
+        var successCallback = function (data) {
+            console.log('Response Data:', data);
+            alert(JSON.stringify(data)); // This is just to see the structure
+
+            if (data.journalEntry) {
+                renderJournalEntry(data.journalEntry);
+            } else {
+                console.error('Data structure is not as expected:', data);
+                $("#journalEntryElement").html("<p>Data is not in the expected format.</p>");
+            }
+        };
+        var url = 'PaymentReceipt/deposit-customer-payment';
+        await postDataWithParameterAndReturn(url, jsonData, successCallback);
+    }
+    function renderJournalEntry(data) {
+        console.log('Rendering with data:', data);
+        const templateSource = document.getElementById('journalEntry-template').innerHTML;
+        const template = Handlebars.compile(templateSource);
+        const html = template(data);
+        $('#journalEntryElement').html(html);
+    }
+    </script>
+  
+
+            <style>
+                .grid-main {
+                    display: flex;
+                }
+
+                .grid-main {
+                    height: auto;
+                    width: 90%;
+                    border: 1px solid steelblue;
+                    padding: 10px;
+                    display: flex;
+                    flex-wrap: wrap; /* Allow wrapping of items */
+                    justify-content: left; /* Center items horizontally */
+                    align-items: flex-start; /* Align items at the start vertically */
+                }
+
+                    .grid-main .right-bar,
+                    .grid-main .left-bar {
+                        display: flex;
+                        flex-direction: column;
+                        width: 45%; /* Adjusted width to give space between right and left bars */
+                        height: 40%;
+                        margin: 5px;
+                        box-sizing: border-box; /* Include padding and border in the element's width/height */
+                        position: relative;
+                        padding: 20px;
+                        justify-content: center;
+                    }
+
+                    .grid-main .center-bar {
+                        display: flex;
+                        flex-direction: column;
+                        width: 91%; /* Full width below the right and left bars */
+                        height: 40%;
+                        margin: 5px;
+                        box-sizing: border-box; /* Include padding and border in the element's width/height */
+                        align-items: center; /* Center content inside */
+                        justify-content: center; /* Center content inside */
+                    }
+
+                .table-responsive input, .table-responsive select {
+                    width: 100%;
+                    height: 30px; /* Adjust height as needed */
+                    padding: 5px 10px; /* Add padding for better spacing */
+                    margin: 5px 0; /* Add some margin for spacing between elements */
+                    border: 1px solid #ccc; /* Light gray border for a clean look */
+                    border-radius: 4px; /* Rounded corners */
+                    box-sizing: border-box; /* Include padding in the element's width */
+                    font-size: 14px; /* Adjust font size */
+                    font-family: 'Roboto', sans-serif; /* Use the same font as your table */
+                    background-color: #f9f9f9; /* Light background color */
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover/focus */
+                }
+
+                    .table-responsive textarea
+                    {
+                    width: 100%;
+                    height: 50px; /* Adjust height as needed */
+                    padding: 5px 10px; /* Add padding for better spacing */
+                    margin: 5px 0; /* Add some margin for spacing between elements */
+                    border: 1px solid #ccc; /* Light gray border for a clean look */
+                    border-radius: 4px; /* Rounded corners */
+                    box-sizing: border-box; /* Include padding in the element's width */
+                    font-size: 14px; /* Adjust font size */
+                    font-family: 'Roboto', sans-serif; /* Use the same font as your table */
+                    background-color: #f9f9f9; /* Light background color */
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover/focus */
+                    }
+
+                    .table-responsive input:focus, .table-responsive select:focus {
+                        border-color: #4287f5; /* Change border color when focused */
+                        box-shadow: 0 0 5px rgba(66, 135, 245, 0.3); /* Add subtle shadow when focused */
+                        outline: none; /* Remove default outline */
+                    }
+
+
+                .td-headline {
+                    width: 20%;
+                    font-weight: bold;
+                    padding: 10px;
+                }
+
+                .td-data {
+                    width: 50%;
+                }
+
+                .table-child-responsive {
+                    width: 100%;
+                    border: 1px solid gainsboro;
+                }
+
+                    .table-child-responsive input, .table-child-responsive select {
+                    width: 70%;
+                    height: 30px; /* Adjust height as needed */
+                    padding: 5px 10px; /* Add padding for better spacing */
+                    margin: 5px 0; /* Add some margin for spacing between elements */
+                    border: 1px solid #ccc; /* Light gray border for a clean look */
+                    border-radius: 4px; /* Rounded corners */
+                    box-sizing: border-box; /* Include padding in the element's width */
+                    font-size: 14px; /* Adjust font size */
+                    font-family: 'Roboto', sans-serif; /* Use the same font as your table */
+                    background-color: #f9f9f9; /* Light background color */
+                    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover/focus */
+                }
+
+                        .table-child-responsive input:focus, .table-child-responsive select:focus {
+                        border-color: #4287f5; /* Change border color when focused */
+                        box-shadow: 0 0 5px rgba(66, 135, 245, 0.3); /* Add subtle shadow when focused */
+                        outline: none; /* Remove default outline */
+                    }
+
+                     
+                .table-child-responsive .td-headline
+                {
+                    padding:5px;
+                    font-family: 'Roboto', sans-serif;
+                    font-size: 12px;
+                    font-weight:normal;
+                   
+                }
+
+                 .table-child-responsive .td-headline .title
+                {
+                    font-weight:bold;
+                    font-size: 14px;
+                   
+                }
+            </style>
+            <div class="grid">
+                <div class="grid-main" id="part-1">
+                    <div class="grid-main right-bar">
+                        <table class="table-responsive">
+                            <tbody>
+                                 <tr>
+                                   <td class="td-headline">Journal No </td>
+                                    <td class="td-data"> <input type="text" id="txtJournalEntryNo"></td>
+                                     
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Payment date</label></td>
+                                    <td class="td-data"> <input type="date" id="txtPaymentDate"></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Journal name</label></td>
+                                    <td class="td-data"> <input type="text" id="txtJournalName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Customer name</label></td>
+                                    <td class="td-data"> <select id="ddlCustomerId"></select></td>
+                                </tr>
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="grid-main left-bar">
+                        <table class="table-responsive">
+                            <tbody>
+                                 <tr>
+                                    <td class="td-headline"> <label>Invoice</label></td>
+                                    <td class="td-data"> <select id="ddlInvoiceId"></select></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Reference Number</label></td>
+                                    <td class="td-data">  <input type="text" id="txtReferenceNumber" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Comments</label></td>
+                                    <td class="td-data">  <textarea type="text" id="txtDescription"> </textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> </td>
+                                    <td class="td-data">    <a href="#" id="btnToggle">Add Items</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="grid-main center-bar">
+                        <table class="table-child-responsive">
+                            <tbody>
+                                 <tr>
+                                    <td class="td-headline title">Journal Items</td>
+                                    <td class="td-headline"></td>
+                                    <td class="td-headline"></td>
+                                    <td class="td-headline"></td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline">Account</td>
+                                    <td class="td-headline">Label</td>
+                                    <td class="td-headline">Debit</td>
+                                    <td class="td-headline">Credit</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <select id="ddlAccountId"></select></td>
+                                    <td class="td-headline"> <input type="text" id="txtJournalLineComments"  /></td>
+                                    <td class="td-headline"> <input type="text" id="txtDebitAmount" placeholder="Enter Debit Amount" /></td>
+                                    <td class="td-headline"> <input type="text" id="txtCreditAmount" placeholder="Enter Credit Amount" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+              @*   <div class="grid-main" id="part-2">
+                    <div id="journalEntryElement"></div>
+                    <script id="journalEntry-template" type="text/x-handlebars-template">
+                    <div class="grid-main right-bar">
+                        <table class="table-responsive">
+                            <tbody>
+                                <tr>
+                                    <td class="td-headline"> <label>Payment Date</label></td>
+                                            <td class="td-data">{{formattedEntryDate}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Customer Name</label></td>
+                                    <td class="td-data">  </td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Invoice</label></td>
+                                    <td class="td-data"> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="grid-main left-bar">
+                        <table class="table-responsive">
+                            <tbody>
+                                <tr>
+                                    <td class="td-headline"> <label>Reference Number</label></td>
+                                            <td class="td-data">   {{referenceNumber}} </td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> <label>Comments</label></td>
+                                            <td class="td-data">    {{description}} </td>
+                                </tr>
+                                <tr>
+                                    <td class="td-headline"> </td>
+                                    <td class="td-data">    <a href="#" id="btnToggle">Add Items</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="grid-main center-bar">
+                        <table class="table-child-responsive">
+                            <tbody>
+                                        
+                                <tr>
+                                    <td class="td-headline">Account</td>
+                                    <td class="td-headline">Description</td>
+                                    <td class="td-headline">Debit</td>
+                                    <td class="td-headline">Credit</td>
+                                </tr>
+                                <tr>
+                                              {{#each journalEntryLines}}
+                                    <td class="td-headline"> {{account}}</td>
+                                    <td class="td-headline">{{{{description}}}}</td>
+                                    <td class="td-headline"> {{debitAmount}}</td>
+                                    <td class="td-headline">{{creditAmount}}</td>
+                                </tr>
+                                         {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    </script>
+                </div> *@
+            </div>
+    
+<script type="text/html" id="customersTemp">
+         <option value="0">Select customer</option>
+    {#foreach $T.customers as record}
+       <option value="{$T.record.id}">{$T.record.name}</option>
+    {#/for}
+</script>
+<script type="text/html" id="accountsTemp">
+         <option value="0">Select account</option>
+    {#foreach $T.accounts as record}
+       <option value="{$T.record.accountId}">{$T.record.accountName}</option>
+    {#/for}
+</script>
+<script type="text/html" id="invoicesTemp">
+         <option value="0">Select invoice</option>
+    {#foreach $T.invoices as record}
+       <option value="{$T.record.id}">{$T.record.invoiceNo}</option>
+    {#/for}
+</script>
+
+
+
+<div class="container mt-5">
+    <h2 class="mb-4">Customer Payment Form</h2>
+    <form id="customerPaymentForm">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="ddlCustomerId" class="form-label">Customer Name</label>
+                <select class="form-select" id="ddlCustomerId">
+                    <option value="">Select customer</option>
+                    <!-- Options will be dynamically added here -->
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="txtPaymentDate" class="form-label">Payment Date</label>
+                <input type="date" class="form-control" id="txtPaymentDate" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="ddlInvoiceId" class="form-label">Invoice</label>
+                <select class="form-select" id="ddlInvoiceId">
+                    <option value="">Select invoice</option>
+                    <!-- Options will be dynamically added here -->
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="txtReferenceNumber" class="form-label">Reference Number</label>
+                <input type="text" class="form-control" id="txtReferenceNumber" placeholder="Enter reference number">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="txtDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="txtDescription" rows="3" placeholder="Enter description"></textarea>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="ddlAccountId" class="form-label">Account</label>
+                <select class="form-select" id="ddlAccountId">
+                    <option value="">Select account</option>
+                    <!-- Options will be dynamically added here -->
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="txtJournalEntryNo" class="form-label">Journal Entry No</label>
+                <input type="text" class="form-control" id="txtJournalEntryNo" placeholder="Enter journal entry number">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="txtJournalName" class="form-label">Journal Name</label>
+                <input type="text" class="form-control" id="txtJournalName" placeholder="Enter journal name">
+            </div>
+            <div class="col-md-6">
+                <label for="txtJournalLineComments" class="form-label">Journal Line Description</label>
+                <input type="text" class="form-control" id="txtJournalLineComments" placeholder="Enter journal line description">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="txtDebitAmount" class="form-label">Debit Amount</label>
+                <input type="number" class="form-control" id="txtDebitAmount" placeholder="Enter debit amount" step="0.01">
+            </div>
+            <div class="col-md-6">
+                <label for="txtCreditAmount" class="form-label">Credit Amount</label>
+                <input type="number" class="form-control" id="txtCreditAmount" placeholder="Enter credit amount" step="0.01">
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <button type="button" class="btn btn-primary" onclick="depositCustomerPayment()">Submit Payment</button>
+        </div>
+    </form>
+</div>

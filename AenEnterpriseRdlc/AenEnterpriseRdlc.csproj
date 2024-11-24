@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Update="AenDbEnterpriseDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="AenDbEnterpriseDataSet1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet1.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="AenDbEnterpriseDataSet2.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet2.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="AenDbEnterpriseDataSet3.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet3.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="AenDbEnterpriseDataSet4.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet4.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="AenDbEnterpriseDataSet5.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AenDbEnterpriseDataSet5.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DataSetAccounts.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DataSetAccounts.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DataSetDeliveryOrder.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DataSetDeliveryOrder.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DelieryOrder.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DelieryOrder.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DeliveryOrder.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeliveryOrder.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AenDbEnterpriseDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="AenDbEnterpriseDataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet1.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="AenDbEnterpriseDataSet2.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet2.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="AenDbEnterpriseDataSet3.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet3.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="AenDbEnterpriseDataSet4.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet4.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="AenDbEnterpriseDataSet5.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AenDbEnterpriseDataSet5.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DataSetAccounts.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetAccounts.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DataSetDeliveryOrder.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetDeliveryOrder.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DelieryOrder.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DelieryOrder.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DeliveryOrder.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DeliveryOrder.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

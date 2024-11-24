@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewData["Title"] = "CategoryItems";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+ 
+
+<script>
+    $(document).ready(function () {
+       
+        GetCategory();
+    })
+    
+ 
+    function GetCategory() {
+        // AJAX request to fetch data from the API
+        const token = localStorage.getItem('Bearer ');
+        $.ajax({
+            url: '/api/Authentication/isauth', // Replace with your API endpoint
+            type: 'Get',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            success: function (data) {
+               alert(data)
+            },
+            error: function () {
+                alert("Error fetching data from the server.");
+            }
+        });
+    } 
+    function DeleteCategory() {
+        var chkChecked = $("input[name='category']:checked").length;
+
+        if (chkChecked >= 1) {
+            var postArr = [];
+            var index = 0;
+            var deleteData;
+
+            $.each($("input[name='category']:checked"), function () {
+                postArr[index] = { CategoryId: $(this).val() }
+                index++;
+            });
+            deleteData = { Categories: postArr };
+            var jsonData = JSON.stringify(deleteData);
+            $.ajax({
+                url: '/api/Category/Delete',
+                type: 'POST',
+                cache: false,
+                dataType: 'json',
+                data: jsonData,
+                contentType: 'application/json;charset-utf-8',
+                success: function (data) {
+                    GetAllCateogry();
+                },
+                error: function (r) {
+                    var jsonError = JSON.stringify(r);
+                    alert("error" + jsonError);
+                }
+            });
+        }
+        else {
+            alert("Please select category to remove!");
+        }
+    }
+
+    window.onload = function () {
+        const featureList = document.querySelectorAll('.topMenu');
+        featureList.forEach((item, i) => {
+            item.addEventListener('mouseover', function () {
+                item.classList.add('active');
+            })
+            item.addEventListener('mouseout', function () {
+                item.classList.remove('active');
+            })
+        })
+
+    }
+</script>
+<h1>Category Items</h1>
+<hr>
+<table id="top_table">
+    <thead>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Edit</th>
+            <th><input type="checkbox" name="checkedAll" class="input-group-sm" id="checkedAll" /></th>
+            <th><a href="#" class="glyphicon glyphicon-trash" onclick="JavaScript: DeleteCategory()"></a></th>
+        </tr>
+    </thead>
+
+    <tbody id="catlist">
+        <!-- Table data will be populated here -->
+    </tbody>
+</table>
+   

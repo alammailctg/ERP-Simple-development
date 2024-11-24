@@ -1,0 +1,55 @@
+﻿/* Base styles for button container */
+.button-container {
+    display: flex;
+    flex-direction: column; /* Stack vertically on smaller screens */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px; /* Limit width on larger screens */
+    margin: 0 auto; /* Center container */
+    padding: 20px;
+}
+
+/* Common styles for both anchor and button */
+.responsive-anchor,
+.responsive-button {
+    display: inline-block;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight:normal;
+    text-decoration: none;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    color: #fff;
+    background-color: #007bff;
+    width: 100%; /* Full width for small screens */
+    max-width: 150px; /* Restrict max width */
+}
+
+    /* Hover effect */
+    .responsive-anchor:hover,
+    .responsive-button:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        transform: translateY(-2px);
+    }
+
+/* Styles specific to anchor */
+.responsive-anchor {
+    text-transform: uppercase;
+}
+
+/* Styles specific to button */
+.responsive-button {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+    .responsive-button:hover {
+        background-color: #218838;
+        border-color: #218838;
+    }

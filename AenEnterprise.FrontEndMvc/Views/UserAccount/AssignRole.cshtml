@@ -1,0 +1,235 @@
+﻿
+@{
+    ViewData["Title"] = "AssignRole";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+<script src="~/script/jquery-jtemplates.js"></script>
+<script>
+    $(document).ready(function () {
+        GetAllUsers();
+        $("#ddlUserId").change(function () {
+            var userId = $("#ddlUserId").val();
+            console.log("User ID selected: ", userId); // Log the selected user ID
+
+            if (userId > 0) {
+                getUserRoles(userId);
+                $("#roleList").show(); // Show the checkboxes when a user is selected
+                console.log("Showing checkboxes"); // Log to see if this line executes
+            } else {
+                $("#roleList").hide(); // Hide the checkboxes when no user is selected
+                console.log("Hiding checkboxes"); // Log to see if this line executes
+            }
+        });
+         
+        
+
+    });
+    async function GetAllUsers() {
+        const token = localStorage.getItem('Bearer ');
+        $.ajax({
+            url: '/api/authentication/GetAllUsers', // Your endpoint
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function (response) {
+                    console.log(response); // Log the response data for debugging
+                    $("#ddlUserId").setTemplate($("#usersTemp").html());
+                    $("#ddlUserId").processTemplate(response);
+
+            },
+            error: function (xhr, textstatus, errorthrown) {
+                console.error('Error fetching users:', errorthrown);
+            }
+        });
+    }
+    function getUserRoles(userId) {
+        const token = localStorage.getItem('Bearer ');
+        // var userId = $("#ddlUserId").val();
+
+        $.ajax({
+            url: '/api/Authentication/GetUserRole?Id=' + userId,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            contentType: 'application/json',
+            success: function (data) {
+                $('.allRoleCheckbox').prop('checked', false);
+
+                // Loop through all role checkboxes
+                $('.allRoleCheckbox').each(function () {
+                    var checkbox = $(this); // Get the current checkbox
+                    var allRoleValue = checkbox.val(); // Get the value of the checkbox
+
+                    // Loop through the user's roles
+                    $.each(data.userRoles, function (index, item) {
+                        var existingRole = item.roleId; // Get the role ID from the user's roles
+
+                        // Check if the role value matches the checkbox value
+                        if (allRoleValue === existingRole.toString()) {
+                            checkbox.prop('checked', true); // Check the box if the values match
+                        }
+                    });
+                });
+
+                console.log(data)
+                // // Uncomment and use this if you want to process the template
+                // $("#userRoleHtml").setTemplate($("#userRoleTemp").html());
+                // $("#userRoleHtml").processTemplate(data);
+            },
+            error: function (er) {
+                var errorMsg = er.responseJSON ? er.responseJSON.message : "An error occurred while fetching user roles.";
+                alert("Error: " + errorMsg);
+            }
+        });
+    }
+    async function AssignRole() {
+
+        if ($("#ddlUserId").val()==0)
+        {
+            alert("Please select User!")
+        }
+        else
+        {
+            var roleIds = [];
+            var userId = $("#ddlUserId").val();
+
+            $(".allRoleCheckbox:checked").each(function () {
+                var allRoleValue = $(this).val();
+                roleIds.push(allRoleValue);
+            })
+
+            var jsonData = {
+
+                UserId: userId,
+                RoleIds: roleIds
+            };
+
+            var successCallback = function (data) {
+
+                alert("You must logout to activate role!");
+                localStorage.removeItem('Bearer ');
+                window.location.href = "/Home/Index";
+                console.log(data);
+                // $("#salesNewOrderElement").setTemplate($("#salesNewOrdersTemp").html());
+                // $("#salesNewOrderElement").processTemplate(data.salesOrder);
+            };
+
+            var url = 'Authentication/AssignRole';
+            await postDataWithParameterAndReturn(url, jsonData, successCallback);
+        }
+       
+    }
+     
+     
+</script>
+
+<div class="container">
+    <h3 class="text-center my-2">Assign Role</h3>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="ddlUserId" class="form-label">Choose User:</label>
+                <select id="ddlUserId" class="form-select">
+                    <!-- Options will be populated here dynamically -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-1" id="roleList" style="display:none">
+    <table class="table table-active">
+        <tbody>
+            <tr>
+                <td>
+                    <input class="form-check-input allRoleCheckbox" type="checkbox" value="1" id="roleAdmin">
+                    <label class="form-check-label" for="roleAdmin">Admin</label>
+                </td>
+                <td>
+                    <input class="form-check-input allRoleCheckbox" type="checkbox" value="2" id="roleManager">
+                    <label class="form-check-label" for="roleManager">Manager</label>
+                </td>
+                <td>
+                    <input class="form-check-input allRoleCheckbox" type="checkbox" value="3" id="roleUser">
+                    <label class="form-check-label" for="roleUser">User</label>
+                </td>
+                <td>
+                    <input class="form-check-input allRoleCheckbox" type="checkbox" value="4" id="roleSales">
+                    <label class="form-check-label" for="roleSales">Sales</label>
+                </td>
+               
+            </tr>
+            <tr>
+                <td colspan="4">
+                        <a href="#" id="btnAssignRole" onclick="JavaScript:AssignRole()" class="btn btn-info">Assign Selected Role</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+ </div>  
+
+<script type="text/html" id="usersTemp">
+    <option value="0">Select User</option>
+    {#foreach $T.users as record}
+        <option value="{$T.record.id}">{$T.record.username}</option>
+    {#/for}
+</script>
+
+
+
+
+
+
+
+
+ @* 
+<script>
+    $(document).ready(function() {
+        // User data: Id, UserName, Roles (stored as an array)
+        var userData = [
+            { Id: 1, UserName: 'Karim', Roles: ['Admin'] },
+            { Id: 2, UserName: 'Rohim', Roles: ['User'] },
+            { Id: 3, UserName: 'Shifat', Roles: [] },
+            { Id: 4, UserName: 'Another', Roles: [] }
+        ];
+
+        // Handle role checkbox click and update user roles
+        $(".roleCheckbox").click(function() {
+            var selectedRole = $(this).val(); // Get the selected role
+            var selectedUsers = [];
+
+            // Get checked users
+            $(".userCheckbox:checked").each(function() {
+                var userId = $(this).val();
+                selectedUsers.push(userId);
+            });
+
+            // If role checkbox is checked, add the role to all selected users
+            if ($(this).is(":checked")) {
+                selectedUsers.forEach(function(userId) {
+                    var user = userData.find(user => user.Id == userId);
+                    if (user && !user.Roles.includes(selectedRole)) {
+                        user.Roles.push(selectedRole); // Add role if it's not already assigned
+                    }
+                });
+            } else {
+                // If unchecked, remove the role from the selected users
+                selectedUsers.forEach(function(userId) {
+                    var user = userData.find(user => user.Id == userId);
+                    if (user) {
+                        user.Roles = user.Roles.filter(role => role !== selectedRole); // Remove the role
+                    }
+                });
+            }
+
+            // Show the updated userData in the console for demonstration
+            console.log(userData);
+            alert(JSON.stringify(userData));
+        });
+    });
+</script>
+
+ *@

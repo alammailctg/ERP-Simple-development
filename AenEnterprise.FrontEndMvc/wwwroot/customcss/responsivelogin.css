@@ -1,0 +1,63 @@
+﻿/* Container for authentication section */
+.auth-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center align items */
+    width: 100%; /* Full width */
+    max-width: 400px; /* Set a max width for large screens */
+    margin: 0 auto; /* Center container horizontally */
+    padding: 20px; /* Add space around */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 10px; /* Rounded corners */
+}
+
+/* Styling for login input and logout button */
+.input-field, .auth-button {
+    width: 100%; /* Full width to adapt to screen size */
+    padding: 0.75em; /* Responsive padding */
+    font-size: 1em; /* Responsive font size */
+    margin: 10px 0; /* Space between elements */
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+/* Style the login button */
+.auth-button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+    .auth-button:hover {
+        background-color: #0056b3;
+    }
+
+/* Username display styling */
+.username-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Ensure the input and button have touch-friendly height */
+.input-field {
+    height: 45px;
+}
+
+/* Ensure consistency in appearance */
+.auth-button, .input-field {
+    appearance: none; /* Remove default browser styles */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Optional: Add spacing and alignment for the logout section */
+.logout-section {
+    display: flex;
+    flex-direction: column; /* Stack username and button */
+    align-items: center;
+}

@@ -1,0 +1,209 @@
+﻿@{
+    ViewData["Title"] = "CreateInvoice";
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+<script src="~/script/jquery-jtemplates.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var paths = window.location.pathname;
+        var pt = paths.length;
+        var Id = paths.substring(31, pt);
+        getApprovedOrderItemDetails(Id);
+
+         
+         // if(orderItemId==null)
+         // {
+         //     window.location.href = '@Url.Action("ApprovedSalesOrders", "SalesManagement")';
+         // }
+         
+    })
+
+    function getApprovedOrderItemDetails(Id) {
+        $.ajax({
+            url: '/api/Invoice/ApprovedOrderItemDetails?salesOrderId=' + Id,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset-utf-8',
+            success: function (data) {
+                console.log(data);
+                var source = $("#salesOrderDetailsTemp").html();
+                var template = Handlebars.compile(source);
+                // Pass the data to the template
+                var html = template(data.salesOrder);
+                // Insert the rendered HTML into the page
+                $("#salesOrderDetailsForEditHtml").html(html);
+            },
+            error: function (er) {
+                var errorSycronim = JSON.stringify(er);
+                alert("error: " + errorSycronim);
+            }
+        });
+    }
+    async function CreateInvoice() {
+        // Get all order items and build an array of data using map
+        const invoiceArray = $(".orderitem-cell-data-container").map(function () {
+
+            const invQuantityElem = $(this).find(".invQuantity");
+        
+            // Ensure the .invQuantity element exists and has an id attribute
+            if (invQuantityElem.length === 0 || !invQuantityElem.attr("id")) {
+                return null; // Skip this iteration if .invQuantity or its id is missing
+            }
+            // Extract and parse data from the elements
+            const invoiceQuantity = parseFloat(invQuantityElem.val()) || 0;
+            const salesOrderId = parseInt($(this).find(".orderitem-cell-data #spnsalesOrderId").text().trim());
+            const orderItemId = parseInt($(this).find(".orderitem-cell-data #spnOrderItemId").text());
+
+            // Return the structured object for each order item
+            return {
+                InvoiceQuantity: invoiceQuantity,
+                SalesOrderId: salesOrderId,
+                OrderItemId: orderItemId
+            };
+        }).get(); // Use .get() to convert the jQuery object into a plain array
+
+        console.log(JSON.stringify(invoiceArray));
+
+        await $.ajax({
+            url: '/api/Invoice/CreateCustomInvoices',
+            type: 'POST',
+            data: JSON.stringify(invoiceArray),
+            contentType: 'application/json',
+            success: function (data) {
+                const invoiceId = data.invoice.id;
+                window.location.href = '@Url.Action("GetInvoiceBySalesOrderId", "SalesOrderReport")?invoiceId=' + invoiceId;
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                console.log("Error: " + error);
+            }
+        });
+    }
+
+
+</script>
+
+<style>
+    /* Define some CSS4 styles for the textbox */
+    input[type="text"] {
+        padding: 10px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        width: 70%;
+    }
+
+        /* Add some styles for focus state */
+        input[type="text"]:focus {
+            border-color: #2ecc71;
+        }
+
+        /* Add some styles for placeholder text */
+        input[type="text"]::placeholder {
+            color: #7f8c8d;
+        }
+</style>
+
+
+
+<div class="container mt-4">
+
+    <div class="row mb-3 custom-row">
+        <div class="form-header mb-3">
+            <h2>Create Invoice</h2>
+        </div>
+        <div id="salesOrderDetailsForEditHtml"></div>
+    </div>
+
+
+    <script id="salesOrderDetailsTemp" type="text/x-handlebars-template">
+        <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+                <div class="col-md-2">
+                    <a href="@Url.Action("GetSalesOrderById", "SalesOrderReport")?salesOrderId={{id}}">
+                        {{salesOrderNo}}
+                    </a>
+                </div>
+                <div class="col-md-3">{{customerName}}</div>
+                <div class="col-md-3">{{orderDateInFormat}}</div>
+                <div class="col-md-4 text-end">
+                    <!-- Additional Action Buttons or Info can be placed here -->
+                </div>
+                <div id="salesOrderIdHidden" style="display:none">{{id}} </div>
+            </div>
+
+        <div class="orderItems-container">
+                 <div class="row orderitem-cell-data-container p-2"  style="font-weight:normal; font:small; color:darkgray; background-color:#ffffff; border: 1px solid lightgray;">
+            <div class="col-md-2">Product name</div>
+                        <div class="col-md-1">Price</div>
+                        <div class="col-md-2">Quantity</div>
+                        <div class="col-md-2">Invoiced Quantity</div>
+                        <div class="col-md-2">Due Quantity</div>
+                        <div class="col-md-2">Amount</div>
+                        </div>
+                         <div class="col-md-1"></div>
+                        </div> 
+            {{#each orderItems}}
+           <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-2 orderitem-cell-data" style="display:none">
+                    <span id="spnOrderItemId">{{id}}</span>
+                </div>
+                <div class="col-md-2">
+                    {{productName}}
+                </div>
+                <div class="col-md-1 orderitem-cell-data">
+                    <span id="spnPrice">{{price}}</span>
+                </div>
+                <div class="col-md-2">
+                    {{quantity}} {{unitName}}
+                    <div id="unitId" class="d-none">{{unitId}}</div>
+                </div>
+                 <div class="col-md-2">
+                        {{#if invoiceQuantityInFormat}}
+                            {{invoiceQuantityInFormat}} {{unitName}}
+                        {{else}}
+                            0 {{unitName}}
+                        {{/if}}
+                    </div>
+                <div class="col-md-2">
+                    {{#if balanceQuantity}}
+                          <input type="text" class="form-control invQuantity" id="Qty-{{productId}}" placeholder="Enter text here" value="{{balanceQuantity}}">
+                        {{else}}
+                            <input type="text" class="form-control invQuantity" id="Qty-{{productId}}" placeholder="Enter text here" value="0">
+                        {{/if}}
+                   
+                </div>
+
+                <div class="col-md-2">
+                    {{amountInFormat}}
+                </div>
+
+                 <div class="col-md-2 orderitem-cell-data" style="display:none">
+                       <span id="spnsalesOrderId">{{salesOrderId}}</span>
+                </div>
+
+            </div>
+            {{/each}}
+
+            <div class="row orderitem-cell-data-container p-2"  style="font-weight:bold; font:small; color:lightslategrey; background-color:#ffffff; border: 1px solid lightgray;">
+            <div class="col-md-2"></div>
+                        <div class="col-md-1">Total :</div>
+                        <div class="col-md-2">{{totalQuantityInFormat}}</div>
+                        <div class="col-md-2">{{totalInvoicedQuantityInFormat}}</div>
+                        <div class="col-md-2">Due Quantity</div>
+                        <div class="col-md-2">{{totalAmountInCurrency}}</div>
+                        </div>
+                         <div class="col-md-1"></div>
+            <div class="orderitem-cell-data-container-footer row mt-3" style="float:right">
+                <div class="col-md-1 text-center">
+                    <button class="btn btn-primary" onclick="JavaScript:CreateInvoice()">Submit</button>
+                </div>
+            </div>
+       
+    </script>
+
+</div>
+ 

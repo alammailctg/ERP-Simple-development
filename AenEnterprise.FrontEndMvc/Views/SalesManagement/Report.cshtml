@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewData["Title"] = "Report";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+<h1>Report</h1>
+<script>
+ 
+    $(document).ready(function() {
+         GetCustomersAll();
+    $('#ddlCustomerId').on('change', function() {
+        var selectedCustomerId = $(this).val();
+        var newUrl = '@Url.Action("GetCustomerOrderDetailsById", "SalesOrderReport")?customerId=' + selectedCustomerId;
+        $('#customerOrderLink').attr('href', newUrl);
+    });
+
+    
+        $('#trialBalanceLink').on('click', function () {
+            var asOfDate = new Date($('#txtAsOfDate').val()).toISOString();  
+            var newUrl = '@Url.Action("GetTrialBalanceByDate", "AccountsReport")?asOfDate=' + asOfDate;
+            $('#trialBalanceLink').attr('href', newUrl);
+        });
+});
+
+    function GetCustomersAll() {
+        $.ajax({
+            url: '/api/Customer/AllCustomer', // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                // Compile Handlebars template
+                var source = $("#customers-template").html();
+                var template = Handlebars.compile(source);
+
+                // Pass the data to the compiled template
+                var html = template(data);
+
+                // Insert the generated HTML into the dropdown
+                $("#ddlCustomerId").html(html);
+            },
+            error: function () {
+                alert("Error fetching data from the server.");
+            }
+        });
+    }
+
+</script>
+<!-- Handlebars Template -->
+<script id="customers-template" type="text/x-handlebars-template">
+    {{#each customers}}
+    <option value="" selected>Select Customer</option>
+        <option value="{{id}}">{{name}}</option>
+    {{/each}}
+</script>
+
+
+<div class="container mt-4">
+
+    <div class="row mb-3 custom-row">
+        <div class="form-header mb-3">
+            <h3>Customer Order Details</h3>
+        </div>
+       
+        <div class="row mt-3">
+            <div class="col-3">
+                <div class="mb-4">
+                    <div class="form-text mb-2">Select customer to print order details</div>
+                    <div class="d-flex gap-3 mb-3">
+                        <select class="form-select form-select-sm ddlCustomerId" id="ddlCustomerId" required>
+                        </select>
+                          <a id="customerOrderLink" href="@Url.Action("GetCustomerOrderDetailsById", "SalesOrderReport")?customerId=">Get Order Details</a>
+                    </div>
+
+                    <div class="d-flex gap-3 mb-3">
+                        <input type="date" class="form-control form-control-sm" id="txtAsOfDate" placeholder="as of Date" required>
+                        <a id="trialBalanceLink" href="@Url.Action("GetTrialBalanceByDate", "AccountsReport")?asOfDate=">Get Trial Balance</a>
+                    </div>
+                    
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

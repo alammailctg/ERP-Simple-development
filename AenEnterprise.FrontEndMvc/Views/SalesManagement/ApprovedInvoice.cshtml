@@ -1,0 +1,208 @@
+﻿
+@{
+    ViewData["Title"] = "ApprovedInvoice";
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //ifgetSalesOrders will mention top of the setDefaultDates it will show error toISOString();
+        setDefaultDates();
+        getInvoices(1,6);
+
+        // $('.paging').on('click', '.page-link', function () {
+        //     const pageNumber = $(this).index() + 1; // Retrieve the page number from the clicked element
+        //     // getSalesOrders(pageNumber, 3);
+        // });
+
+        $("#checkedAll").change(function () {
+            if (this.checked) {
+                $(".checkSingle").each(function () {
+                    this.checked = true;
+                })
+            } else {
+                $(".checkSingle").each(function () {
+                    this.checked = false;
+                })
+            }
+        });
+        $(".checkSingle").click(function () {
+            if ($(this).is(":checked")) {
+                var isAllChecked = 0;
+                $(".checkSingle").each(function () {
+                    if (!this.checked)
+                        isAllChecked = 1;
+                })
+                if (isAllChecked == 0) { $("#checkedAll").prop("checked", true); }
+            }
+            else {
+                $("#checkedAll").prop("checked", false);
+            }
+        });
+    });
+    function resetFilters() {
+        // Reset date inputs
+        document.getElementById('dateFromInput').value = '';
+        document.getElementById('dateToInput').value = '';
+
+        // Reset search criteria
+        document.getElementById('txtCriteriaName').value = '';
+        setDefaultDates();
+        getInvoices(1, 6);
+    }
+    async function getInvoices(pageNumber, pageSize) {
+        const dateFromInput = new Date(document.getElementById('dateFromInput').value).toISOString();
+        const dateToInput = new Date(document.getElementById('dateToInput').value).toISOString();
+        const criteriaName = document.getElementById('txtCriteriaName').value;
+        await GetAllInvoices(pageNumber, pageSize, dateFromInput, dateToInput, criteriaName);
+    }
+    async function GetAllInvoices(pageNumber, pageSize, dateFrom, dateTo, criteriaName) {
+        try {
+            var jsonData = {
+                DateFrom: dateFrom,
+                DateTo: dateTo,
+                PageNumber: pageNumber,
+                PageSize: pageSize,
+                CriteriaName: criteriaName
+            }
+            var url = 'Invoice/GetAllApproveInvoices';
+            var salesResponse = await getAllDataWithParameter(url, jsonData);
+          
+            console.log(JSON.stringify(salesResponse));
+            $(".totalItemsFound").empty();
+            var source = $("#salesOrdersTemp").html();
+            var template = Handlebars.compile(source);
+
+          
+            var html = template(salesResponse);
+
+           
+            $("#salesOrderElement").html(html);
+
+           
+            paginationCallBackForInvoiceList(salesResponse.totalPages, pageNumber);
+            showpage(pageNumber, salesResponse.totalPages);
+
+            
+            $(".totalItemsFound").append(`Items found - ${salesResponse.totalCount}/${salesResponse.totalPages} Pages`);
+
+        } catch (error) {
+            console.error("Error fetching data from the server: " + error.message);
+        }
+    }
+     
+</script>
+
+ 
+<div class="container salesOrder-container mt-4">
+
+    <!-- Date Range and Search Section -->
+    <div class="row mb-3 align-items-end custom-row">
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateFromInput" class="form-label">From Date</label>
+            <input type="date" id="dateFromInput" class="form-control" placeholder="From Date">
+        </div>
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateToInput" class="form-label">To Date</label>
+            <input type="date" id="dateToInput" class="form-control" placeholder="To Date">
+        </div>
+        <div class="col-md-3 col-sm-8 mb-2 mb-md-0">
+            <label for="txtCriteriaName" class="form-label">Search Order Items</label>
+            <input type="search" id="txtCriteriaName" class="form-control" placeholder="Search Order Items">
+        </div>
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-primary w-100" onclick="Javascript: getInvoices(1,6)">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-secondary w-100" onclick="resetFilters()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="row mb-3 custom-row">
+        <div class="col-10">
+            <div class="col-md-3 col-sm-6 d-flex flex-row gap-2" style=" float:right">
+                <select id="ddlStatusId" class="form-select">
+                    <option value="2">Approve</option>
+                    <option value="3">Reject</option>
+                </select>
+                <button class="btn btn-secondary ms-auto" onclick="Javascript:ChangeApprovalStatusByChecked()">
+                    Change
+                </button>
+            </div>
+            <div class="totalItemsFound"></div>
+        </div>
+        
+        <br>
+        <br>
+        <hr>
+        <div id="salesOrderElement"></div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center paging"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script id="salesOrdersTemp" type="text/x-handlebars-template">
+        {{#each invoices as |record|}}
+        <!-- Sales Order Row -->
+        <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+            <div class="col-md-2">
+              
+                <a href="@Url.Action("GetInvoiceBySalesOrderId", "SalesOrderReport")?InvoiceId={{record.id}}">
+                    {{record.invoiceNo}}
+                </a>
+            </div>
+            <div class="col-md-3">{{record.customerName}}</div>
+            <div class="col-md-3">{{record.orderDateInFormat}}</div>
+            <div class="col-md-4 text-end">
+                <a href="@Url.Action("CreateDeliveryOrder", "SalesManagement")/{{record.id}}">Issue DO</a><br>
+            </div>
+             
+            <div id="salesOrderIdHidden" style="display:none">{{record.id}}</div>
+        </div>
+
+        <!-- Order Items Container -->
+        <div class="orderItems-container">
+            <div class="row orderitem-cell-data-container p-2" style="font-weight:normal; font:small; color:darkgray; background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-3">Product name</div>
+                <div class="col-md-2">Price</div>
+                <div class="col-md-2">Invoiced Quantity</div>
+                <div class="col-md-2">Due Quantity</div>
+                <div class="col-md-2">Amount</div>
+            </div>
+
+            {{#each record.invoiceItems as |inv|}}
+            <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-1" style="display:none">
+                    <span id="spnInvoiceItemId">{{inv.id}}</span>
+                    <span id="spnInvoiceId">{{inv.invoiceId}}</span>
+                </div>
+                <div class="col-md-3">{{inv.productName}}</div>
+                <div class="col-md-2">{{inv.price}}</div>
+                <div class="col-md-2">{{inv.invoiceQuantity}} {{inv.unitName}}</div>
+                <div class="col-md-2">{{inv.balanceQuantity}} {{inv.unitName}}</div>
+                <div class="col-md-2">{{inv.invoiceAmount}}</div>
+               
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+    </script>
+
+</div>

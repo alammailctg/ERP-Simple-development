@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewData["Title"] = "ApproveDeliveryOrder";
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+ 
+<h3>ApprovedDeliveryOrder</h3>
+<script>
+    $(document).ready(function () {
+
+        //ifgetSalesOrders will mention top of the setDefaultDates it will show error toISOString();
+        setDefaultDates();
+        getAllDeliveryOrder(1, 6);
+         
+    });
+     async function getAllDeliveryOrder(pageNumber, pageSize) {
+        const dateFromInput = new Date(document.getElementById('dateFromInput').value).toISOString();
+        const dateToInput = new Date(document.getElementById('dateToInput').value).toISOString();
+        const criteriaName = document.getElementById('txtCriteriaName').value;
+        await GetAllDelivery(pageNumber, pageSize, dateFromInput, dateToInput, criteriaName);
+    }
+
+    async function GetAllDelivery(pageNumber, pageSize, dateFrom, dateTo, criteriaName) {
+        try {
+            var jsonData = {
+                DateFrom: dateFrom,
+                DateTo: dateTo,
+                PageNumber: pageNumber,
+                PageSize: pageSize,
+                CriteriaName: criteriaName
+            }
+
+            var url = 'DO/GetAllApprovedDeliveryOrder';
+            var dOResponse = await getAllDataWithParameter(url, jsonData);
+
+            // Log the response data for debugging
+            console.log(dOResponse);
+
+            // Handle total items and pagination
+            $(".totalItemsFound").empty();
+            $(".totalItemsFound").append(`Items found - ${dOResponse.totalCount} / ${dOResponse.totalPages} Pages`);
+
+            // Compile the Handlebars template
+            var source = document.getElementById("deliveryOrdersTemplate").innerHTML;
+            var template = Handlebars.compile(source);
+
+            // Process the template with the data
+            var html = template(dOResponse); // assuming 'items' contains the list of sales orders
+
+            // Inject the generated HTML into the DOM
+            document.getElementById("deliveryOrderElement").innerHTML = html;
+
+            // Handle pagination
+            paginationCallBackForDeliveryList(dOResponse.totalPages, pageNumber);
+            
+        } catch (error) {
+            console.error("Error fetching data from the server: " + error.message);
+        }
+    }
+
+</script>
+
+
+<div class="container salesOrder-container mt-4">
+
+    <!-- Date Range and Search Section -->
+    <div class="row mb-3 align-items-end custom-row">
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateFromInput" class="form-label">From Date</label>
+            <input type="date" id="dateFromInput" class="form-control" placeholder="From Date">
+        </div>
+        <div class="col-md-2 col-sm-6 mb-2 mb-md-0">
+            <label for="dateToInput" class="form-label">To Date</label>
+            <input type="date" id="dateToInput" class="form-control" placeholder="To Date">
+        </div>
+        <div class="col-md-3 col-sm-8 mb-2 mb-md-0">
+            <label for="txtCriteriaName" class="form-label">Search Order Items</label>
+            <input type="search" id="txtCriteriaName" class="form-control" placeholder="Search Order Items">
+        </div>
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-primary w-100" onclick="Javascript: getAllUnApprovedDeliveryOrder(1,6)">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+
+        <div class="col-md-2 col-sm-4 text-md-end">
+            <button class="btn btn-secondary w-100" onclick="resetFilters()">
+                <i class="fas fa-undo"></i> Reset
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="row mb-3 custom-row">
+        <div class="col-10">
+            <div class="col-md-3 col-sm-6 d-flex flex-row gap-2" style=" float:right">
+                <select id="ddlStatusId" class="form-select">
+                    <option value="2">Approve</option>
+                    <option value="3">Reject</option>
+                </select>
+                <button class="btn btn-secondary ms-auto" onclick="Javascript:ChangeApprovalStatusByChecked()">
+                    Change
+                </button>
+            </div>
+            <div class="totalItemsFound"></div>
+        </div>
+       
+        <br>
+        <br>
+        <hr>
+        <div id="deliveryOrderElement"></div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center paging"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script id="deliveryOrdersTemplate" type="text/x-handlebars-template">
+        {{#each deliveryOrders as |record|}}
+        <!-- Sales Order Row -->
+        <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+            <div class="col-md-2">
+                <a href="/SalesOrderReport/GetSalesOrderById?salesOrderId={{record.id}}">{{record.deliveryOrderNo}}</a>
+               
+            </div>
+            <div class="col-md-3">{{record.customerName}}</div>
+            {{record.createdDate}}
+            <div class="col-md-4 text-end">
+                 <div class="col-md-2">    <a href="@Url.Action("CreateDispatch", "SalesManagement")/{{record.id}}">Issue Dispatch</a><br>
+                    </div>
+            </div>
+            <div id="salesOrderIdHidden" style="display:none">{{record.id}}</div>
+        </div>
+
+        <!-- Order Items Container -->
+        <div class="orderItems-container">
+            <div class="row orderitem-cell-data-container p-2" style="font-weight:normal; font:small; color:darkgray; background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-2">Product name</div>
+                <div class="col-md-1">Price</div>
+                <div class="col-md-2">Quantity</div>
+                @* <div class="col-md-2">Dispatch Quantity</div> *@
+                
+                <div class="col-md-2">Amount</div>
+            </div>
+
+          {{#each record.deliveryOrderItems as |deli|}}
+            <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-1" style="display:none">
+                    <span id="spnInvoiceItemId">{{deli.id}}</span>
+                    <span id="spnInvoiceId">{{deli.deliveryOrderId}}</span>
+                </div>
+                <div class="col-md-2">  {{deli.productName}}</div>
+                <div class="col-md-1"> {{deli.price}}</div>
+                <div class="col-md-2"> {{deli.deliveryQuantity}} {{deli.unitName}}</div>
+                <div class="col-md-2">{{deli.deliveryAmount}}</div>
+             
+                
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+    </script>
+
+</div>
+                
+ 

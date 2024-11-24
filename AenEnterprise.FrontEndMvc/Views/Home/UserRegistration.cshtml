@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Index";
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+      
+<script>
+
+    $(document).ready(function () {
+        $('#btnRegi').on('click', function (event) {
+            event.preventDefault();
+            UserRegistration();
+        });
+
+        //Keyboard behaviour
+        function handleEnterKeyPress(event) {
+            if (event.keyCode === 13) { // Check if the pressed key is Enter (key code 13)
+                event.preventDefault();
+                UserRegistration();
+
+            }
+        }
+        document.addEventListener('keypress', function (event) {
+            handleEnterKeyPress(event); // Call the function to handle Enter key press
+        });
+    })
+      
+    async function UserRegistration() {
+        const token = localStorage.getItem('Bearer ');
+        try {
+            // Validate input
+            if ($("#txtUsername").val() !== "" && $("#txtPassword").val() !== "") {
+                var username = $("#txtUsername").val();
+                var password = $("#txtPassword").val();
+
+                var jsonData = {
+                    UserName: username,
+                    Password: password
+                };
+
+                // AJAX request
+                await $.ajax({
+                    url: '/api/Authentication/CreateUser',
+                    method: 'POST',
+                    contentType: "application/json",
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: JSON.stringify(jsonData)
+                }).done(function (response) {
+                    var message=response;
+                    var CheckExistence="exists."
+                    var isValid = message.includes(CheckExistence)
+                    if (isValid)
+                    {
+                        $("#lblException").text(message).css("color", "red");
+                    } else {
+                       
+                       alert("User successfully created!, You must assign user role!");
+                        window.location.href = '@Url.Action("AssignRole","UserAccount" )'
+                    }
+                }).fail(function (xhr) {
+                    throw xhr;
+                });
+            } else {
+                $("#lblException").text("Please enter your UserName & Password to proceed").css("color", "red");
+            }
+        } catch (error) {
+            // Handle error response
+            let errorMessage;
+
+            if (error.responseJSON && error.responseJSON.message) {
+                // Use the error message from the response
+                errorMessage = error.responseJSON.message;
+            }
+            $('#lblException').text(errorMessage).fadeIn(300).delay(2000).fadeOut(300);
+        }
+    }
+
+     
+
+    function showLoader(idShowLoader) {
+        $("#" + idShowLoader).show();
+    }
+    function hideLoader(idHideLoader) {
+        $("#" + idHideLoader).hide();
+    }
+
+
+</script>
+
+<div class="container">
+    <div class="row">
+    <div class="col-3 custom-form-registration">
+        <div class="header-registration text-center mb-4">
+            <h2>Registration</h2>
+        </div>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="txtUsername">User Name:</label>
+                <input id="txtUsername" name="name" placeholder="Your name or email or phone required" type="text" class="form-control custom-input1" required />
+            </div>
+
+            <div class="form-group">
+                <label for="txtPassword">Password:</label>
+                <input id="txtPassword" name="password" placeholder="Your password required" type="password" class="form-control custom-input1" required />
+            </div>
+
+            <label id="lblException" class="text-danger mb-3"></label>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary submit-button" id="btnRegi">Register</button>
+                <div id="sm-Loader" class="mt-2"></div>
+               
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+ 

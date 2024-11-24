@@ -1,0 +1,626 @@
+﻿@{
+    ViewData["Title"] = "CreateSalesOrder";
+
+
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+
+
+<script src="~/script/jquery-jtemplates.js"></script>
+<script src="~/script/ajaxscript.js"></script>
+@* <script>
+    // function GetRedisSalesOrderId() {
+    //     // Return the AJAX promise directly
+    //     return $.ajax({
+    //         url: "/api/SalesOrder/GetSalesOrder", // API endpoint
+    //         method: "GET",
+    //         success: function (data) {
+    //             $("#salesOrderIdResult").text("Sales Order ID: " + data);
+    //             return data; // This return works only inside the success callback.
+    //         },
+    //         error: function () {
+    //             $("#salesOrderIdResult").text("Sales Order ID not found.");
+    //             return null; // You can handle this accordingly in the calling function
+    //         }
+    //     });
+    // }
+    // $(document).ready(function () {
+       
+    //     // // Execute AJAX and wait for response
+    //     // GetRedisSalesOrderId().done(function (salesOrderId) {
+    //     //     if (salesOrderId != null && salesOrderId !== "") {
+    //     //         getSalesOrderDetailsByRedis();
+    //     //     } else {
+    //     //         $("#salesOrderIdResult").text("Sales Order ID not found or invalid.");
+    //     //     }
+    //     // }).fail(function () {
+    //     //     $("#salesOrderIdResult").text("Failed to retrieve Sales Order ID.");
+    //     // });
+
+    //     // Other event handlers like handleEnterKeyPress() etc.
+    //     // function handleEnterKeyPress(event) {
+    //     //     if (event.keyCode === 13) { // Check if the pressed key is Enter (key code 13)
+    //     //         event.preventDefault();
+    //     //         $('#part-one input[type="text"]').each(function () {
+    //     //             if ($(this).val() == null || $(this).val() == 0) {
+    //     //                 $("#lblexceptionone-part-1").text("Please fill in all fields").css("color", "red");
+    //     //             } else {
+    //     //                 $('#part-one').hide();
+    //     //                 $('#part-two').show();
+    //     //                 $('#part-three').show();
+    //     //             }
+    //     //         });
+    //     //         $('#part-one select').each(function () {
+    //     //             if ($(this).val() == null || $(this).val() == 0) {
+    //     //                 $("#lblexceptionone-part-1").text("Please fill in all fields").css("color", "red");
+    //     //             } else {
+    //     //                 $('#part-one').hide();
+    //     //                 $('#part-two').show();
+    //     //                 $('#part-three').show();
+    //     //             }
+    //     //         });
+    //     //     }
+    //     // }
+    //     // document.addEventListener('keypress', function (event) {
+    //     //     handleEnterKeyPress(event); // Call the function to handle Enter key press
+    //     // });
+    // });
+    // $(document).ready(function () {
+       
+
+
+    //     // document.addEventListener('keypress', function (event) {
+    //     //     handleEnterKeyPress(event); // Call the function to handle Enter key press
+    //     // });
+       
+    //     // const salesOrderId = GetRedisSalesOrderId();
+
+    //     // GetRedisSalesOrderId().done(function (salesOrderId) {
+    //     //     if (salesOrderId != null && salesOrderId !== "") {
+
+    //     //         $('#part-one').hide();
+    //     //         $('#part-two').show();
+    //     //         $('#part-three').show();
+
+    //     //         // Fetch sales order details if salesOrderId is valid
+    //     //         getSalesOrderDetailsByRedis();
+    //     //     } else {
+    //     //         $("#salesOrderIdResult").text("Sales Order ID not found or invalid.");
+    //     //     }
+    //     // });
+
+    // })
+
+    // async function getSalesOrderDetailsByRedis() {
+    //     var url = 'SalesOrder/GetSalesOrderDetailsByRedis';
+    //     var successCallback = function (data) {
+    //         // Compile the Handlebars template
+    //         var source = $("#salesNewOrdersTemplate").html();
+    //         var template = Handlebars.compile(source);
+
+    //         // Generate HTML and inject into the DOM
+    //         var html = template(data.salesOrder);
+    //         $("#salesNewOrderElement").html(html);
+    //     };
+    //     await getByData(url, successCallback);
+    // }
+   
+</script>
+ *@
+<script>
+
+
+    $(document).ready(function () {
+        GetProductsAll();
+        GetCustomersAll();
+        GetUnitsAll();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('txtOrderDate').value = today;
+
+        $("#btnDiscard").on('click', function () {
+            var url = 'SalesOrder/CancelSalesOrder';
+            var successCallback = function () {
+                resetForm();
+                location.reload();
+            };
+
+            // Perform the cancel operation
+            deleteDataById(url, successCallback);
+        });
+
+        // Function to clone a new product row
+        function cloneNewRow() {
+            const $originalRow = $('.product-row').first();
+            const $newRow = $originalRow.clone();
+
+            // Clear the values of the cloned row inputs and selects
+            $newRow.find('input').val('');
+            $newRow.find('select').val('');
+            $newRow.find('.is-invalid').removeClass('is-invalid');
+
+            // Append the new row to the table body
+            $('#product-rows-container').append($newRow);
+        }
+
+        // Event listener for adding new rows
+        $(document).on('click', '.btnAddNew', function () {
+            cloneNewRow();
+        });
+
+        // Event listener for deleting a row
+        $(document).on('click', '.btnDeleteRow', function () {
+            if ($('#product-rows-container tr').length > 1) {
+                $(this).closest('tr').remove();
+            }
+        });
+
+        $(document).on('click', '.btnDiscard', function () {
+            if ($('#product-rows-container tr').length > 1) {
+                $(this).closest('tr').remove();
+            }
+        });
+
+        // Form validation for direct submit using jQuery
+        (function () {
+            'use strict';
+            const $form = $('#salesOrderForm');
+
+            $form.on('submit', function (event) {
+                event.preventDefault(); // Prevent the default form submission behavior
+                // Perform custom validation for select elements
+                validateSelect('#ddlCustomerId');
+                validateAllProductRows(); // Validate all product rows
+
+                // Prevent submission if the form is not valid
+                if (!$form[0].checkValidity()) {
+                    event.stopPropagation();
+                    console.log("Form is invalid during submit");
+                } else {
+                    console.log("Form is valid, ready for submission");
+                    CreateSalesOrder(); // Call the async function without triggering page reload
+
+                }
+
+                $form.addClass('was-validated');
+            });
+        })();
+
+        // Function to validate select elements to ensure non-empty and non-zero value
+        function validateSelect(selector) {
+            const $select = $(selector);
+            const value = $select.val();
+            console.log(`Validating ${selector}:`, value);
+            if (!value || value === "0") {
+                $select[0].setCustomValidity('Please select a valid option.');
+                $select.addClass('is-invalid'); // Show invalid state
+                console.log(`${selector} is invalid.`);
+            } else {
+                $select[0].setCustomValidity('');
+                $select.removeClass('is-invalid'); // Hide invalid state
+                console.log(`${selector} is valid.`);
+            }
+        }
+
+        // Validate all rows of products to ensure non-empty values
+        function validateAllProductRows() {
+            $('#product-rows-container .product-row').each(function () {
+                validateSelect($(this).find('.ddlProductId'));
+                validateSelect($(this).find('.ddlUnitId'));
+
+                $(this).find('.txtPrice, .txtDiscountPercent, .txtQuantity').each(function () {
+                    if (!$(this).val()) {
+                        $(this).addClass('is-invalid');
+                        $(this)[0].setCustomValidity('This field is required.');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this)[0].setCustomValidity('');
+                    }
+                });
+            });
+        }
+
+        // Clear validation messages when a user interacts with the select or input elements
+        $(document).on('change', '.ddlCustomerId, .ddlProductId, .ddlUnitId', function () {
+            validateSelect($(this));
+        });
+
+        $(document).on('input', '.txtPrice, .txtDiscountPercent, .txtQuantity', function () {
+            if ($(this).val()) {
+                $(this).removeClass('is-invalid');
+                $(this)[0].setCustomValidity('');
+            }
+        });
+
+        // Initialize with one product row
+        // cloneNewRow();
+    });
+
+
+    async function CreateSalesOrder() {
+        var customerId = $("#ddlCustomerId").val();
+        var orderDate = new Date($("#txtOrderDate").val()).toISOString();
+        var description = $("#txtDescription").val();
+        var deliveryPlane = $("#txtDeliveryPlane").val();
+
+        // Collect product details from each row
+        var orderItemsRequests = [];
+        $("#product-rows-container .product-row").each(function () {
+            var productId = $(this).find(".ddlProductId").val();
+            var unitId = $(this).find(".ddlUnitId").val();
+            var quantity = $(this).find(".txtQuantity").val();
+            var price = $(this).find(".txtPrice").val();
+            var discountPercent = $(this).find(".txtDiscountPercent").val();
+
+            // Only add rows that have a selected product and quantity
+            if (productId && quantity) {
+                orderItemsRequests.push({
+                    ProductId: productId,
+                    UnitId: unitId,
+                    Quantity: quantity,
+                    Price: price,
+                    DiscountPercent: discountPercent
+                });
+            }
+        });
+
+        // Construct JSON data for the sales order
+        var jsonData = {
+            FormRequest: {
+                OrderedDate: orderDate,
+                CustomerId: customerId,
+                Description: description,
+                DeliveryPlane: deliveryPlane
+            },
+            OrderItemsRequests: orderItemsRequests
+        };
+
+        var successCallback = function (data) {
+            console.log(data);
+            var forwaredLink = window.location.href = "@Url.Action("GetSalesOrderById", "SalesOrderReport")?salesOrderId=" + data.salesOrder.id;
+            var source = $("#salesNewOrdersTemplate").html();
+            var template = Handlebars.compile(source);
+
+            // Generate HTML and inject into the DOM
+            var html = template(data.salesOrder);
+            $("#salesNewOrderElement").html(html);
+        };
+
+        var url = 'SalesOrder/CreateSalesOrder';
+        await postDataWithParameterAndReturn(url, jsonData, successCallback);
+        AddSalesOrders();
+        forwaredLink;
+        $('#product-rows-container').empty();
+    }
+
+    async function AddSalesOrders() {
+        const url = 'SalesOrder/AddSalesOrders';
+        try {
+            await postDataWithoutParameterAndReturn(url);
+        } catch (error) {
+            // Handle errors
+            console.error(error);
+        }
+    }
+    function resetForm() {
+        // Reset all input fields
+        $('#salesOrderForm').find('input[type="text"], input[type="date"]').val('');
+
+        // Reset all select elements to their default value
+        $('#salesOrderForm').find('select').prop('selectedIndex', 0);
+
+        // Clear any validation feedback
+        $('#salesOrderForm').find('.is-invalid').removeClass('is-invalid');
+        $('#salesOrderForm').find('.is-valid').removeClass('is-valid');
+
+       
+    }
+
+    async function DeleteOrderItem(orderItemId) {
+        var itemId = orderItemId;
+        var salesOrderId = parseInt($("#spnSalesOrderId").text());
+        // var orderItemId = parseInt($("#spnOrderItemId").text());
+        var formRequest = {
+            SalesOrderId: salesOrderId,  // You might need to get the sales order ID dynamically
+        };
+
+        await $.ajax({
+            url: '/api/SalesOrder/DeleteOrderItem?orderItemId=' + itemId,
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(formRequest),
+            contentType: 'application/json',
+            success: function (data) {
+
+                if (data.salesOrder == null) {
+                    window.location.href = '@Url.Action("CreateSalesOrder", "SalesManagement")';
+                }
+                else {
+                    $("#salesNewOrderElement").setTemplate($("#salesNewOrdersTemp").html());
+                    $("#salesNewOrderElement").processTemplate(data.salesOrder);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+    async function GetProductsAll() {
+        $.ajax({
+            url: '/api/Inventory/AllProducts', // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json',
+            // headers: {
+            //     'Authorization': 'Bearer ' + token
+            // },
+            success: function (data) {
+                $(".ddlProductId").setTemplate($("#productsTemp").html());
+                $(".ddlProductId").processTemplate(data);
+            },
+            error: function () {
+                alert("Error fetching data from the server.");
+            }
+        });
+    }
+    function GetUnitsAll() {
+        $.ajax({
+            url: '/api/Inventory/AllUnits', // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json',
+            // headers: {
+            //     'Authorization': 'Bearer ' + token
+            // },
+            success: function (data) {
+                $(".ddlUnitId").setTemplate($("#unitsTemp").html());
+                $(".ddlUnitId").processTemplate(data);
+            },
+            error: function () {
+                alert("Error fetching data from the server.");
+            }
+        });
+    }
+    function GetCustomersAll() {
+        $.ajax({
+            url: '/api/Customer/AllCustomer', // Replace with your API endpoint
+            type: 'GET',
+            dataType: 'json',
+            // headers: {
+            //     'Authorization': 'Bearer ' + token
+            // },
+            success: function (data) {
+                $("#ddlCustomerId").setTemplate($("#customersTemp").html());
+                $("#ddlCustomerId").processTemplate(data);
+                var jsonData = JSON.stringify(data.salesOrder);
+
+            },
+            error: function () {
+                alert("Error fetching data from the server.");
+            }
+        });
+    }
+
+</script>
+<div class="container mt-4">
+    <div class="form-header mb-3">
+        <h2>Create Sales Order</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="salesOrderForm" novalidate>
+                <div id="parts-container-one" class="mb-4">
+                    <div class="form-text mb-2">Order Date and Customer Name</div>
+                    <div class="d-flex gap-3 mb-3">
+                        <input type="date" class="form-control form-control-sm" id="txtOrderDate" placeholder="Order Date" required>
+                        <select class="form-select form-select-sm ddlCustomerId" id="ddlCustomerId" required>
+                            <option value="">Select Customer</option>
+                        </select>
+                        <input type="text" class="form-control form-control-sm" Id="txtDeliveryPlane" placeholder="Delivery Plane" required>
+                        <div class="invalid-feedback">Please enter a quantity.</div>
+                    </div>
+
+                </div>
+
+                <!-- Table for product details -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Discount %</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-rows-container">
+                            <tr class="product-row">
+                                <td>
+                                    <select class="form-select form-select-sm ddlProductId" required>
+                                        <option value="">Select Product</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a product.</div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm txtPrice" placeholder="Price" required>
+                                    <div class="invalid-feedback">Please enter a price.</div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm txtDiscountPercent" placeholder="Discount %" required>
+                                    <div class="invalid-feedback">Please enter a discount percentage.</div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm txtQuantity" placeholder="Quantity" required>
+                                    <div class="invalid-feedback">Please enter a quantity.</div>
+                                </td>
+
+                                <td>
+                                    <select class="form-select form-select-sm ddlUnitId" required>
+                                        <option value="">Select Unit</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a unit.</div>
+                                </td>
+
+
+                                <td>
+                                    <button type="button" class="btn btn-outline-info btn-sm btnAddNew">
+                                        Add new
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm btnDeleteRow">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button id="btnDiscard" type="button" class="btn btn-danger btn-sm">Discard</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="btnSubmit">Submit</button>
+                </div>
+            </form>
+
+            <hr />
+            <div id="salesNewOrderElement"></div>
+        </div>
+    </div>
+
+</div>
+@*
+<script id="salesNewOrdersTemplate" type="text/x-handlebars-template">
+    <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+        <div class="col-md-2">
+
+                 {{salesOrderNo}}
+
+        </div>
+        <div class="col-md-3">{{customerName}}</div>
+        <div class="col-md-3"> {{orderDateInFormat}}</div>
+        <div class="col-md-4 text-end">
+            <!-- Additional Action Buttons or Info can be placed here -->
+        </div>
+    </div>
+
+    <!-- Order Items Container -->
+    <div class="orderItems-container">
+        {{#each orderItems}}
+            <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-1"><span id="spnOrderItemid">{{salesOrderId}}</span></div>
+                <div class="col-md-2">{{productName}}</div>
+                <div class="col-md-2">{{price}}</div>
+                <div class="col-md-1">{{quantityInFormat}} {{unitName}}</div>
+                <div class="col-md-2">{{amountInFormat}}</div>
+                <div class="col-md-2">
+                    <div class="form-check">
+                      <a href="#" class="text-danger" onclick="DeleteOrderItem('{{id}}')">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+          <div class="row mt-3">
+            <div class="col-6 text-end">
+                <a href="@Url.Action("GetSalesOrderById", "SalesOrderReport")?salesOrderId={{id}}" class="btn btn-primary btn-sm" id="btnConfirm">Confirm</a>
+            </div>
+             <div class="col-6 col-md-3 text-md-end">
+                <button id="btnDeleteAll" class="btn btn-danger btn-sm" onclick="cancelSalesOrder({{id}});">Discard</button>
+            </div>
+        </div>
+    </div>
+
+
+</script>
+ *@
+<script type="text/html" id="customersTemp">
+
+         <option value="0">Select customer</option>
+    {#foreach $T.customers as record}
+       <option value="{$T.record.id}">{$T.record.name}</option>
+    {#/for}
+</script>
+<script type="text/html" id="productsTemp">
+         <option value="0">Select Product</option>
+    {#foreach $T.products as record}
+       <option value="{$T.record.id}">{$T.record.name}</option>
+    {#/for}
+
+</script>
+<script type="text/html" id="unitsTemp">
+         <option value="0">Select Unit</option>
+    {#foreach $T.units as record}
+       <option value="{$T.record.id}">{$T.record.name}</option>
+    {#/for}
+</script>
+
+
+
+@* // $('#btnToggle').on('click', function () {
+    //     // It is for part-one
+    //     $('#part-one input[type="text"]').each(function () {
+    //         if ($(this).val() == null || $(this).val() == 0) {
+    //             $("#lblexceptionone-part-1").text("Please fill in all fields").css("color", "red");
+    //         } else {
+    //             $('#part-one').hide();
+    //             $('#part-two').show();
+    //             $('#part-three').show();
+
+    //         }
+    //     });
+    //     $('#part-one select').each(function () {
+    //         if ($(this).val() == null || $(this).val() == 0) {
+    //             $("#lblexceptionone-part-1").text("Please fill in all fields").css("color", "red");
+    //         }
+    //         else {
+    //             $('#part-one').hide();
+    //             $('#part-two').show();
+    //             $('#part-three').show();
+    //         }
+    //     });
+
+    //     // It is for part-two and three
+    //     $('#part-two input[type="text"]').each(function () {
+    //         if ($(this).val() == null || $(this).val() == 0) {
+    //             $("#lblexceptionone").text("Please fill in all fields").css("color", "red");
+    //         }
+    //     });
+    //     $('#part-two select').each(function () {
+    //         if ($(this).val() == null || $(this).val() == 0) {
+    //             $("#lblexceptionone").text("Please fill in all fields").css("color", "red");
+    //         }
+    //     });
+    // });
+    // $('#btnAdd').on('click', function () {
+
+    //     var allFieldsFilled = true;
+
+    //     $('#part-two input[type="text"]').each(function () {
+    //         var fieldId = $(this).attr('id');
+    //         if (fieldId !== 'txtDiscountPercent' && fieldId !== 'txtDescription' && fieldId !== 'txtDeliveryPlane') {
+    //             if ($(this).val() === null || $(this).val().trim() === '') {
+    //                 allFieldsFilled = false;
+    //                 $("#lblexceptionone-part-2").text("Please fill in all fields").css("color", "red");
+    //                 return false; // Exit the loop early if any text field is empty
+    //             }
+    //         }
+    //     });
+
+    //     $('#part-two select').each(function () {
+    //         if ($(this).val() === null || $(this).val() === '' || $(this).val() === '0') {
+    //             allFieldsFilled = false;
+    //             $("#lblexceptionone-part-2").text("Please fill in all fields").css("color", "red");
+    //             return false; // Exit the loop early if any dropdown is not selected
+    //         }
+    //     });
+
+    //     if (allFieldsFilled) {
+    //         CreateSalesOrder(); // If all fields are filled, call the function to create sales order
+    //         $("#lblexceptionone-part-2").text("").css("color", "red");
+    //     }
+    // });
+    // $('#btnCancel').on('click', function () {
+    //     var salesOrderId = parseInt($("#spnSalesOrderId").text());
+    //     cancelSalesOrder();
+
+    // }); *@

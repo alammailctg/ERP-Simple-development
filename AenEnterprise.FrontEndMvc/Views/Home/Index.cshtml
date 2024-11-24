@@ -1,0 +1,265 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/Login_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+      
+        function handleEnterKeyPress(event) {
+            if (event.keyCode === 13) { // Enter key
+                event.preventDefault(); // Prevent default form submission
+                var allFieldsFilled = true;
+                $('.form-group input[type="text"], .form-group input[type="password"]').each(function () {
+                    if ($(this).val() === null || $(this).val().trim() === '') {
+                        allFieldsFilled = false;
+                        $("#lblException").text("Please fill in all fields").css("color", "red");
+                        return false;
+                    }
+                });
+
+                if (allFieldsFilled) {
+                    handleLogin(); // Trigger login function
+                }
+            }
+        }
+
+        // Attach enter key event listener
+        document.addEventListener('keypress', function (event) {
+            handleEnterKeyPress(event);
+        });
+
+        // Click event for login button
+        $('#btnLogin').on('click', function (event) {
+            event.preventDefault();
+            var allFieldsFilled = true;
+            $('.form-group input[type="text"], .form-group input[type="password"]').each(function () {
+                if ($(this).val() === null || $(this).val().trim() === '') {
+                    allFieldsFilled = false;
+                    $("#lblException").text("Please fill in all fields").css("color", "red");
+                    return false;
+                }
+            });
+
+            if (allFieldsFilled) {
+                handleLogin(); // Trigger login
+            }
+        });
+    });
+
+    function handleLogin() {
+        var username = $('#txtUsernameLogin').val();
+        var password = $('#txtPasswordLogin').val();
+
+        // Show loader
+        showLoader('sm-Loader');
+
+        UserLogin(username, password);
+    }
+
+    function UserLogin(username, password) {
+        var jsonData = {
+            Username: username,
+            Password: password
+        };
+
+        // Show the loader initially
+        showLoader('sm-Loader');
+
+        $.ajax({
+            url: '/api/Authentication/LoginUser',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(jsonData),
+            success: function (response) {
+                var message = response;
+                var CheckExistence = "registared"; // Misspelled, should be "registered"
+                var isValid = message.includes(CheckExistence);
+
+                if (isValid) {
+                    $("#lblException").text(message).css("color", "red");
+                    hideLoader('sm-Loader'); // Hide loader immediately if the user is registered
+                } else {
+                    // Keep showing loader for 3 seconds before proceeding
+                    setTimeout(function () {
+                        // After 3 seconds, hide the loader and call GetTokenFromClaim
+                        hideLoader('sm-Loader');
+                        localStorage.setItem('Bearer ', response); // Store the token
+
+                        // Call GetTokenFromClaim with the stored token
+                        $.ajax({
+                            url: '/api/Authentication/GetRoleFromClaim?token='+response,
+                            method: 'GET',
+                            contentType: 'application/json',
+                            data: { token: response }, // Pass the token as a query parameter
+                            success: function (rolesResponse) {
+                                console.log("Roles Response:", rolesResponse);
+                              
+                                window.location.href = '@Url.Action("Index", "SalesManagement")';
+                                localStorage.setItem('roles', rolesResponse); // Store the token
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                // Handle error for GetTokenFromClaim
+                                console.error('Error calling GetTokenFromClaim:', errorThrown);
+                            }
+                        });
+                    }, 3000); // 3000 milliseconds = 3 seconds
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                // Hide the loader if there's an error
+                hideLoader('sm-Loader');
+                console.error('Error:', errorThrown);
+            }
+        });
+    }
+
+
+
+function showLoader(idShowLoader) {
+    $("#" + idShowLoader).show(); // Show the loader
+}
+
+function hideLoader(idHideLoader) {
+    $("#" + idHideLoader).hide(); // Hide the loader
+}
+
+
+    async function GetUserName() {
+        var username = $("#txtUsernameLogin").val();
+        var password = $("#txtPasswordLogin").val();
+
+        var jsonData = {
+            Username: username,
+            Password: password
+        };
+
+        await $.ajax({
+            url: '/api/Authen/GetUserName',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(jsonData),
+            success: function (datas) {
+                var userData = datas.user;
+                if (userData && userData.username !== null) {
+                    UserLogin();
+                } else {
+                    $("#lblException").text("User not found, create a new account").css("color", "red");
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error(textStatus, errorThrown);
+            }
+        });
+    }
+
+    function checkUser() {
+        var username = $("#txtUsernameLogin").val();
+        var password = $("#txtPasswordLogin").val();
+
+        fetch('/api/Authen/Login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ Username: username, Password: password })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(errorMessage => {
+                        $("#lblException").text(errorMessage).css("color", "red");
+                    });
+                }
+                return response.text().then(() => {
+                    UserLogin();
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $("#lblException").text("An error occurred.").css("color", "red");
+            });
+    }
+
+    function showLoader(idShowLoader) {
+        $("#" + idShowLoader).show();
+    }
+
+    function hideLoader(idHideLoader) {
+        $("#" + idHideLoader).hide();
+    }
+</script>
+
+
+<div class="login-form" id="loginForm">
+    <div class="custom-form-login" id="frmLogin">
+        <div class="header-login">
+            <h2>Login Account</h2>
+            <hr />
+            <label id="lblException"></label>
+        </div>
+
+        <form method="post" class="form-body">
+            <div class="form-group">
+                <label for="name">User Name:</label>
+                <input id="txtUsernameLogin" name="name" placeholder="Your name or email or phone required" type="text" class="custom-input1" />
+            </div>
+
+            <div class="form-group">
+                <label for="name">Password:</label>
+                <input id="txtPasswordLogin" name="name" placeholder="Your password required" type="password" class="custom-input1" />
+            </div>
+
+            <div class="button-group">
+                <a class="custom-button submit-button" href="#" id="btnLogin">Login<div id="sm-Loader"></div></a>
+                <a href="#" class="forgot-password-button">Forgot Password</a>
+            </div>
+
+            <div class="button-group">
+                <a href="@Url.Action("UserRegistration", "Home")">Create account</a><br />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+ @*  // $.ajax({
+        //     url: '/api/Authentication/GetToken',
+        //     method: 'GET',
+        //     success: function (data) {
+        //         if (data != null) {
+        //             localStorage.setItem('Bearer ', data);
+        //             // Set lighter opacity if data is received
+        //             $('.login-form').css('opacity', '0.5');
+        //             window.location.href = '@Url.Action("Index", "SalesManagement")';
+        //         } else {
+        //             // Normal opacity if data is null
+        //             $('.login-form').css('opacity', '1');
+        //         }
+        //     },
+        //     error: function (xhr, textStatus, errorThrown) {
+        //         console.error('Error:', errorThrown);
+        //         // Reset to normal opacity in case of error
+        //         $('.login-form').css('opacity', '1');
+        //     }
+        // });
+
+        // $(document).ready(function () {
+        //     const token = localStorage.getItem('Bearer');
+        //     const currentUrl = window.location.href;
+
+        //     // Check if the token is null or empty
+        //     if (token) {
+        //         // Only redirect if not already on the SalesManagement page
+        //         if (!currentUrl.includes('@Url.Action("Index", "SalesManagement")')) {
+        //             window.location.href = '@Url.Action("Index", "SalesManagement")';
+        //         }
+        //     } else {
+        //         // Only redirect if not already on the Home page
+        //         if (!currentUrl.includes('@Url.Action("Index", "Home")')) {
+        //             window.location.href = '@Url.Action("Index", "Home")';
+        //         }
+        //     }
+        // }); *@
+

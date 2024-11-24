@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  aenenterprise.frontendmvc:
+    image: ${DOCKER_REGISTRY-}aenenterprisefrontendmvc
+    build:
+      context: .
+      dockerfile: AenEnterprise.FrontEndMvc/Dockerfile
+    ports:
+      - "82:82"
+      - "4002:4002"
+    depends_on:
+      - mssql
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=mssql;Database=AenDbEnterprise;User ID=sa;Password=1234;TrustServerCertificate=True;"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "1234" # Replace with a strong password
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:

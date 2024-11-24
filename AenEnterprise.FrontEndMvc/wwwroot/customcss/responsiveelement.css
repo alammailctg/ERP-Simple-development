@@ -1,0 +1,46 @@
+﻿/* Container to ensure label and select are aligned */
+.select-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Takes the full width of the parent container */
+    max-width: 400px; /* Optional: Limit the max width for larger screens */
+    margin: 0 auto; /* Center the container */
+    padding: 20px;
+}
+
+/* Label styling */
+.select-label {
+    font-size: 1.2em; /* Scales with the size of the text */
+    margin-bottom: 10px;
+}
+
+/* Responsive select dropdown styling */
+.responsive-select {
+    width: 100%; /* Ensures full width of the container */
+    padding: 0.75em; /* Padding scales with font size */
+    font-size: 1em; /* Makes the text responsive based on parent */
+    border: 2px solid #e2d1d1;
+    border-radius: 6px;
+    background-color: #fff;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease; /* Smooth transition on focus */
+}
+
+    /* Border color change on focus */
+    .responsive-select:focus {
+        border-color: #0056b3;
+    }
+
+/* Ensure select list is visually appealing and touch-friendly */
+.responsive-select {
+    appearance: none; /* Removes default appearance to allow custom styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Optional: Slight shadow for better visibility */
+.responsive-select {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}

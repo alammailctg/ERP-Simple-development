@@ -1,0 +1,238 @@
+﻿@{
+    ViewData["Title"] = "CreateDeliveryOrder";
+
+
+
+    Layout = "~/Views/Shared/AdminPanel_Layout.cshtml";
+}
+ 
+
+<script>
+    $(document).ready(function () {
+        var paths = window.location.pathname;
+        var pt = paths.length;
+        var Id = paths.substring(37, pt);
+        getApprovedInvoiceDetails(Id)
+       
+    })
+
+
+    $(document).ready(function () {
+        $(document).on("click", "#btnSave", function (event) {
+            event.preventDefault();  // Prevent default behavior
+            console.log("Button clicked");  // Check if the event is triggered
+            CreateDeliveryOrder();  // Call your function
+        });
+    });
+
+    function getApprovedInvoiceDetails(Id) {
+        $.ajax({
+            url: '/api/Invoice/ApprovedInvoiceDetails?invoiceId=' + Id,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            success: function (data) {
+
+                // Get the Handlebars template
+                var source = $("#invoiceDetailsTemp").html();
+                var template = Handlebars.compile(source);
+
+                // Pass the data to the template
+                var html = template(data.invoice);
+
+                // Insert the generated HTML into the target element
+                $("#invoiceDetailsTempHtml").html(html);
+            },
+            error: function (er) {
+                var errorSycronim = JSON.stringify(er);
+                alert("error: " + errorSycronim);
+            }
+        });
+    }
+
+    async function CreateDeliveryOrder() {
+        var deliveryOrderArray = [];
+        if ($(".orderitem-cell-data-container").length === 0) {
+            alert("No order items found.");
+            return;
+        }
+        $(".orderitem-cell-data-container").each(function () {
+            var deliveryOrderQuantity = parseFloat($(this).find(".invQuantity").val());
+
+            // Use appropriate selector for each element and check if they exist
+            var invoiceItemIdElement = $(this).find("#spnInvoiceItemId");
+            var invoiceIdElement = $(this).find("#spnInvoiceId");
+            var orderItemIdElement = $(this).find("#spnOrderItemId");
+
+            if (invoiceItemIdElement.length > 0 && invoiceIdElement.length > 0 && orderItemIdElement.length > 0) {
+                var invoiceItemId = parseInt(invoiceItemIdElement.text());
+                var invoiceId = parseInt(invoiceIdElement.text());
+                var orderItemId = parseInt(orderItemIdElement.text());
+
+                // Ensure the values are valid before adding them to the array
+                if (!isNaN(deliveryOrderQuantity) && invoiceItemId && invoiceId && orderItemId) {
+                    var formRequests = {
+                        DeliveryQuantity: deliveryOrderQuantity,
+                        InvoiceId: invoiceId,
+                        OrderItemId: orderItemId,
+                        InvoiceItemId: invoiceItemId
+                    };
+
+                    // Add to the array
+                    deliveryOrderArray.push(formRequests);
+                }
+            } else {
+                console.warn("Missing elements for an order item, skipping...");
+            }
+        });
+
+        console.log(deliveryOrderArray);
+
+        // If the array is empty, show an alert and exit the function
+        if (deliveryOrderArray.length === 0) {
+            alert("No valid delivery order items found.");
+            return;
+        }
+        try {
+            const response = await fetch('/api/DO/CreateCustomDO', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(deliveryOrderArray)
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+
+            const data = await response.json();
+            console.log(data.id);
+            const deliverOrderId=JSON.stringify(data.deliveryOrder.id);
+            window.location.href = "@Url.Action("GetDeliveryOrderBySalesOrderId", "SalesOrderReport")?deliveryOrderId=" + deliverOrderId;
+           
+        } catch (error) {
+            console.error(error.message);
+            alert("Error: " + error.message);
+        }
+    }
+
+
+
+
+</script>
+
+<style>
+    /* Define some CSS4 styles for the textbox */
+    input[type="text"] {
+        padding: 10px;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        outline: none;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        width: 70%;
+    }
+
+        /* Add some styles for focus state */
+        input[type="text"]:focus {
+            border-color: #2ecc71;
+            /* Add some styles for placeholder text */
+            input [type="text"]::placeholder;
+            color: #7f8c8d;
+        }
+</style>
+
+
+
+<div class="container mt-4">
+
+    <div class="row mb-3 custom-row">
+        <div class="form-header mb-3">
+            <h2>Create Delivery Order </h2>
+        </div>
+        <div id="invoiceDetailsTempHtml"></div>
+    </div>
+    <script id="invoiceDetailsTemp" type="text/x-handlebars-template">
+        <div class="row border-bottom p-2" style="background-color:#f0f0f0; border: 1px solid lightgray;">
+                <div class="col-md-2">
+                    <span id="spnInvoiceId">{{id}}</span><br>
+                {{invoiceNo}}
+                </div>
+                <div class="col-md-3">{{customerName}}</div>
+                <div class="col-md-3">  {{createdDate}}</div>
+                <div class="col-md-4 text-end">
+                    <!-- Additional Action Buttons or Info can be placed here -->
+                </div>
+                <div id="salesOrderIdHidden" style="display:none">{{id}} </div>
+            </div>
+
+        <div class="orderItems-container">
+                 <div class="row orderitem-cell-data-container p-2"  style="font-weight:normal; font:small; color:darkgray; background-color:#ffffff; border: 1px solid lightgray;">
+            <div class="col-md-2">Product name</div>
+                        <div class="col-md-1">Price</div>
+                        <div class="col-md-2">Quantity</div>
+                        <div class="col-md-2">Due Quantity</div>
+                        <div class="col-md-2">Amount</div>
+                        </div>
+                         <div class="col-md-1"></div>
+                        </div>
+             {{#each invoiceItems}}
+           <div class="row orderitem-cell-data-container p-2" style="background-color:#ffffff; border: 1px solid lightgray;">
+                <div class="col-md-2 orderitem-cell-data" style="display:none">
+                      <span id="spnInvoiceItemId">{{id}}</span><br>
+                    <span id="spnInvoiceId">{{invoiceId}}</span><br>
+                    <span id="spnOrderItemId">{{orderItemId}}</span>
+                </div>
+                <div class="col-md-2">
+                    {{productName}}
+                </div>
+                <div class="col-md-1 orderitem-cell-data">
+                    <span id="spnPrice">{{price}}</span>
+                </div>
+                <div class="col-md-2">
+                     {{#if invoiceQuantity}}
+                            {{invoiceQuantity}} {{unitName}}
+                        {{else}}
+                            0 {{unitName}}
+                        {{/if}}
+                    <div id="unitId" class="d-none">{{unitId}}</div>
+                </div>
+
+                <div class="col-md-2">
+                    {{#if balanceQuantity}}
+                          <input type="text" class="form-control invQuantity" id="Qty-{{productId}}" placeholder="Enter text here" value="{{balanceQuantity}}">
+                        {{else}}
+                            <input type="text" class="form-control invQuantity" id="Qty-{{productId}}" placeholder="Enter text here" value="0">
+                        {{/if}}
+
+                </div>
+
+                <div class="col-md-2">
+                      {{invoiceAmount}}
+                </div>
+
+                 <div class="col-md-2 orderitem-cell-data" style="display:none">
+                       <span id="spnsalesOrderId">{{salesOrderId}}</span>
+                </div>
+
+            </div>
+            {{/each}}
+
+
+            <div class="orderitem-cell-data-container-footer row mt-3" style="float:right">
+                <div class="col-md-1 text-center">
+
+               <input type="button" id="btnSave" class="btn btn-info btn-sm" value="Save"/>
+
+
+                </div>
+            </div>
+
+    </script>
+
+</div>
+
+
+
+
