@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace AenEnterprise.DomainModel.InventoryManagement
 {
-     
     public class ProductionOrder
     {
         public int Id { get; set; }
@@ -19,8 +18,7 @@ namespace AenEnterprise.DomainModel.InventoryManagement
             _productionOrderItems= new List<ProductionOrderItem>();
             CreatedDate = DateTime.Today;
         }
-
-
+        //Stretegy pattern
         public void SetItemValidator(IProductionOrderItemValidator itemValidator)
         {
             _itemValidator = itemValidator;
