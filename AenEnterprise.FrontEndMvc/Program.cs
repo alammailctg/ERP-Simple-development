@@ -51,6 +51,7 @@ using AenEnterprise.ServiceImplementations.Mapping.Automappers.GeneralLedger;
 using AenEnterprise.DomainModel.AccountsAndFinance.GeneralLedger.GeneralLedgerInterface;
 using AenEnterprise.DomainModel.AccountsAndFinance.GeneralLedger;
 using AenEnterprise.DomainModel.InventoryManagement;
+using AenEnterprise.ServiceImplementations.FeatureRabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,8 +70,10 @@ Log.Information("Starting up the application...");
 // Add services to the container.
 builder.Host.UseSerilog(); // Use Serilog for logging
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
+builder.Services.AddControllersWithViews(); 
+builder.Services.AddHostedService<RabbitMQConsumer>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<SalesOrderApprovalConsumer>(); // Add RabbitMQ Consumer
 //BlogEngine Service
 builder.Services.AddTransient<IBlogEngineService, BlogEngineService>();
 builder.Services.AddTransient<IBlogCategoryRepository, BlogCategoryRepository>();
@@ -280,6 +283,13 @@ app.UseAuthorization();
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<NotificationHub>("/notificationHub");
+});
+var salesOrderConsumer = app.Services.GetRequiredService<SalesOrderApprovalConsumer>();
+salesOrderConsumer.StartListening();
 app.Run();
 //configureMapster();
 

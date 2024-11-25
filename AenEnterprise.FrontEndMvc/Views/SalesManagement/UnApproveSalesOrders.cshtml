@@ -115,9 +115,46 @@
 
 </script>
 
+<div class="container mt-4">
+    <!-- Notification area -->
+    <div id="notification-area"></div>
 
-<div class="container salesOrder-container mt-4">
-  
+    <!-- Include SignalR library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        // Step 1: Establish SignalR connection to the hub
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub") // Ensure the route matches backend configuration
+            .build();
+
+        // Step 2: Define a listener for "ReceiveNotification"
+        connection.on("ReceiveNotification", function (message) {
+            const notificationArea = document.getElementById("notification-area");
+
+            // Create a Bootstrap alert dynamically
+            const alert = document.createElement("div");
+            alert.className = "alert alert-success alert-dismissible fade show";
+            alert.role = "alert";
+            alert.innerHTML = `
+                        <strong>Notification:</strong> ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+
+            // Append alert to notification area
+            notificationArea.appendChild(alert);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove("show");
+                alert.classList.add("fade");
+                setTimeout(() => alert.remove(), 150); // Remove alert from DOM
+            }, 5000);
+        });
+
+        // Step 3: Start the SignalR connection
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+</div>
     <!-- Date Range and Search Section -->
     <div class="row mb-3 align-items-end custom-row">
         <div class="col-md-2 col-sm-6 mb-2 mb-md-0">

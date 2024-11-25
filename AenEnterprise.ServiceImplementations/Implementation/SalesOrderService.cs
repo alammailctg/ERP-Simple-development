@@ -28,6 +28,8 @@ using AenEnterprise.ServiceImplementations.Mapping.Automappers;
 using Microsoft.Extensions.Logging;
 using AenEnterprise.ServiceImplementations.ViewModel;
 using Twilio.Rest.Supersim.V1;
+using AenEnterprise.ServiceImplementations.FeatureRabbitMQ;
+using System.Text.Json;
 
 namespace AenEnterprise.ServiceImplementations.Implementation
 {
@@ -54,6 +56,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         private readonly IDatabase _redisDb;
         private readonly RedisConnection _redisConnection;
         private readonly ILogger<SalesOrderService> _logger;
+        private readonly RabbitMQPublisher _publisher;
         public SalesOrderService(ISalesOrderRepository salesOrderRepository,
             IBankAccountRepository bankAccountRepository,
             IUnitOfWork unitOfWork, IProductRepository productRepository,
@@ -68,10 +71,9 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         ICookieImplementation cookieImplementation,
         IInvoiceItemRepository invoiceItemRepository,
         IDeliveryOrderItemRepository deliveryItemOrderRepository,
-        IMapper mapper, 
+        IMapper mapper,
         RedisConnection redisConnection,
-        ILogger<SalesOrderService> logger
-         )
+        ILogger<SalesOrderService> logger)
         {
             _context = new AenEnterpriseDbContext();
             _orderItemRepository = orderItemRepository;
@@ -93,6 +95,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             _redisDb = redisConnection.GetDatabase();
             _redisConnection = redisConnection;
             _logger = logger;
+            _publisher = new RabbitMQPublisher();
         }
 
         public async Task<string> GetRedisSalesOrderId()
@@ -102,6 +105,9 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         }
         public async Task<GetSalesOrderResponse> CreateSalesOrderAsync(CreateSalesOrderRequest request)
         {
+            
+            const string queueName = "SalesOrderQueue";
+
             var salesOrderId = await _redisDb.StringGetAsync("SalesOrderId");
             //string salesOrderId = _cookieImplementation.Get(CookieDataKey.SalesOrderId.ToString());
             Product product = await _productRepository.GetByIdAsync(request.ProductId);
@@ -132,7 +138,9 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                     salesOrder.CreateOrderItem(product, unit, request.Quantity, request.Price, request.DiscountPercent, request.TotalInvoiceQuantity, 1, true);
                 }
                 await _salesOrderRepository.UpdateAsync(salesOrder);
+
                 response.SalesOrder = salesOrder.ConvertToSalesOrderView(_mapper, 1, true);
+                _publisher.PublishMessage(queueName, $"Updated Sales Order: {response.SalesOrder.Id}");
             }
             else
             {
@@ -148,7 +156,20 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 await _salesOrderRepository.AddAsync(newSalesOrder);
                 response.SalesOrder = newSalesOrder.ConvertToSalesOrderView(_mapper, 1, true);
                 await _redisDb.StringSetAsync("SalesOrderId", response.SalesOrder.Id.ToString(), TimeSpan.FromMinutes(5));
+                _publisher.PublishMessage(queueName, $"Created Sales Order: {response.SalesOrder.Id}");
                 //_cookieImplementation.Set(CookieDataKey.SalesOrderId.ToString(), response.SalesOrder.Id.ToString(), 1, true, false);
+                 
+                
+                var approvalMessage = new SalesOrderApprovalMessage
+                {
+                    SalesOrderId = response.SalesOrder.Id,
+                    IsApproved = false,  // Initial approval status
+                    Status = "Pending Approval" // Set initial status
+                };
+
+                var rabbitMesg = JsonSerializer.Serialize(approvalMessage);
+
+                _publisher.PublishMessage("SalesOrderApprovalQueue", rabbitMesg);
             }
             return response;
         }

@@ -14,7 +14,8 @@ namespace AenEnterprise.FrontEndMvc.Controllers
 
         public BaseGenerateReport(IWebHostEnvironment env)
         {
-            connectionString = "Data Source=host.docker.internal;Initial Catalog=AenDbEnterprise;User ID=SA;Password=StrongPassw0rd!;Encrypt=False;TrustServerCertificate=True";
+            //connectionString = "Data Source=host.docker.internal;Initial Catalog=AenDbEnterprise;User ID=SA;Password=StrongPassw0rd!;Encrypt=False;TrustServerCertificate=True";
+            connectionString = "Data Source=.\\sqlexpress;Initial Catalog=AenDbEnterprise;User ID=sa;Password=1234;Encrypt=False;TrustServerCertificate=True";
             _env = env;
         }
 

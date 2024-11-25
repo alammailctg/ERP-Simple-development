@@ -34,11 +34,13 @@ namespace AenEnterprise.DataAccess
                 //         options.UseSqlServer("Data Source=.\\SQLEXPRESS; Initial Catalog=AenDbEnterprise; User ID=sa; Password=1234;TrustServerCertificate=True;")
                 //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 //     .EnableSensitiveDataLogging();
-                //options.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AenDbEnterprise; Integrated Security=True;TrustServerCertificate=True;")
-                //    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-                options.UseSqlServer("Data Source=host.docker.internal, 1400; Initial Catalog=AenDbEnterprise; User ID=SA; Password=StrongPassw0rd!;TrustServerCertificate=True;")
-      .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-           .EnableSensitiveDataLogging();
+
+                options.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=AenDbEnterprise; Integrated Security=True;TrustServerCertificate=True;")
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+                //          options.UseSqlServer("Data Source=host.docker.internal, 1400; Initial Catalog=AenDbEnterprise; User ID=SA; Password=StrongPassw0rd!;TrustServerCertificate=True;")
+                //.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                //     .EnableSensitiveDataLogging();
 
             }
         }
