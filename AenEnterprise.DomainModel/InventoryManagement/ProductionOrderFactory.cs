@@ -10,7 +10,7 @@ namespace AenEnterprise.DomainModel.InventoryManagement
     {
         public static ProductionOrderItem CreateNewProductOrderItem(ProductionOrder productionOrder, int productId, decimal quantityRequested, decimal quantityProduce, int unitId)
         {
-            return new ProductionOrderItem(productId, quantityRequested, quantityProduce,unitId);
+            return new ProductionOrderItem(productionOrder, productId, quantityRequested, quantityProduce,unitId);
         }
     }
 }

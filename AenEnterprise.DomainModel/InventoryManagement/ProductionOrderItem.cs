@@ -15,8 +15,9 @@ namespace AenEnterprise.DomainModel.InventoryManagement
         {
             
         }
-        public ProductionOrderItem(int productId, decimal quantityRequested, decimal quantityProduce,int unitId)
+        public ProductionOrderItem(ProductionOrder productionOrder, int productId, decimal quantityRequested, decimal quantityProduce,int unitId)
         {
+            ProductionOrder = productionOrder;
             ProductId = productId;
             QuantityRequested = quantityRequested;
             QuantityProduced = quantityProduce;
