@@ -70,7 +70,8 @@ Log.Information("Starting up the application...");
 // Add services to the container.
 builder.Host.UseSerilog(); // Use Serilog for logging
 // Add services to the container.
-builder.Services.AddControllersWithViews(); 
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<RabbitMQPublisher>();
 builder.Services.AddHostedService<RabbitMQConsumer>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<SalesOrderApprovalConsumer>(); // Add RabbitMQ Consumer
@@ -283,11 +284,9 @@ app.UseAuthorization();
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapHub<NotificationHub>("/notificationHub");
-});
+app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<SalesOrderHub>("/salesOrderHub");
+
 var salesOrderConsumer = app.Services.GetRequiredService<SalesOrderApprovalConsumer>();
 salesOrderConsumer.StartListening();
 app.Run();

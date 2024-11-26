@@ -30,6 +30,7 @@ using AenEnterprise.ServiceImplementations.ViewModel;
 using Twilio.Rest.Supersim.V1;
 using AenEnterprise.ServiceImplementations.FeatureRabbitMQ;
 using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AenEnterprise.ServiceImplementations.Implementation
 {
@@ -57,6 +58,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         private readonly RedisConnection _redisConnection;
         private readonly ILogger<SalesOrderService> _logger;
         private readonly RabbitMQPublisher _publisher;
+        private readonly IHubContext<SalesOrderHub> _hubContext;
         public SalesOrderService(ISalesOrderRepository salesOrderRepository,
             IBankAccountRepository bankAccountRepository,
             IUnitOfWork unitOfWork, IProductRepository productRepository,
@@ -73,7 +75,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         IDeliveryOrderItemRepository deliveryItemOrderRepository,
         IMapper mapper,
         RedisConnection redisConnection,
-        ILogger<SalesOrderService> logger)
+        ILogger<SalesOrderService> logger, IHubContext<SalesOrderHub> hubContext, RabbitMQPublisher publisher)
         {
             _context = new AenEnterpriseDbContext();
             _orderItemRepository = orderItemRepository;
@@ -95,7 +97,9 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             _redisDb = redisConnection.GetDatabase();
             _redisConnection = redisConnection;
             _logger = logger;
-            _publisher = new RabbitMQPublisher();
+
+            _hubContext = hubContext;
+            _publisher = publisher;
         }
 
         public async Task<string> GetRedisSalesOrderId()
@@ -140,7 +144,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 await _salesOrderRepository.UpdateAsync(salesOrder);
 
                 response.SalesOrder = salesOrder.ConvertToSalesOrderView(_mapper, 1, true);
-                _publisher.PublishMessage(queueName, $"Updated Sales Order: {response.SalesOrder.Id}");
+                //_publisher.PublishMessage(queueName, $"Updated Sales Order: {response.SalesOrder.Id}");
             }
             else
             {
@@ -168,7 +172,11 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 };
 
                 var rabbitMesg = JsonSerializer.Serialize(approvalMessage);
+                if (salesOrders.Any())
+                {
+                    await _hubContext.Clients.All.SendAsync("ReceiveSalesOrderUpdate");
 
+                }
                 _publisher.PublishMessage("SalesOrderApprovalQueue", rabbitMesg);
             }
             return response;
@@ -231,22 +239,18 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             }
             return response;
         }
-
         // For Unapproved Order Items
         public async Task<GetAllSalesOrderResponse> GetAllUnApprovedOrderItems(SalesOrderSearchCriteriaRequest request)
         {
             // Call the base method with statusId = 1 for unapproved orders
             return await GetAllSalesOrders(request, 1,false);
         }
-
         // For Approved Order Items
         public async Task<GetAllSalesOrderResponse> GetAllApprovedOrderItems(SalesOrderSearchCriteriaRequest request)
         {
             // Call the base method with statusId = 2 for approved orders
             return await GetAllSalesOrders(request, 2,true);
         }
-
-
         public async Task<GetAllSalesOrderResponse> GetAllSalesOrders(SalesOrderSearchCriteriaRequest request,int statusId, bool isPartial)
         {
             GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();
@@ -256,9 +260,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 .ThenInclude(so => so.Unit)
                 .Include(so => so.OrderItems)
                 .ThenInclude(so=>so.Product)
-                
             .Where(so => so.OrderItems != null && so.OrderItems.Count()> 0 && so.OrderItems.Any(oi => oi.StatusId == statusId && oi.IsPartiallyApproved==isPartial));
-             
             // Apply optional filtering based on CriteriaName
             if (!string.IsNullOrEmpty(request.CriteriaName))
             {
@@ -273,23 +275,17 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                     EF.Functions.Like(e.DeliveryOrders.FirstOrDefault().DeliveryOrderNo, $"%{request.CriteriaName}%")
                );
             }
-
-             
-
             // Apply date range filtering if both dates are provided
             if (request.DateFrom != null && request.DateTo != null)
             {
                 query = query.Where(so => so.OrderedDate.Date >= request.DateFrom.Date &&
                                            so.OrderedDate.Date <= request.DateTo.Date.AddDays(1));
             }
-
             // Get total count of filtered records
             int totalCount = await query.CountAsync();
-
             // Pagination setup
             int totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
             int skipCount = (request.PageNumber - 1) * request.PageSize;
-
             // Apply pagination and sort
             IEnumerable<SalesOrder> salesOrders = await query
                 .OrderByDescending(so => so.OrderedDate).OrderByDescending(so => so.Id)
@@ -297,20 +293,18 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 .Skip(skipCount)
                 .Take(request.PageSize)
                 .ToListAsync();
-
             // Convert to view model
             response.SalesOrders = salesOrders.ConvertToSalesOrderViews(_mapper, statusId, true);
             response.TotalPages = totalPages;
             response.PageNumber = request.PageNumber;
             response.PageSize = request.PageSize;
             response.TotalCount = totalCount;
+           
 
-            // Save changes (if necessary)
             await _unitOfWork.SaveAsync();
 
             return response;
         }
-      
         public async Task<GetAllSalesOrderResponse> GetAllApprovedOrderItemsSummary(SalesOrderSearchCriteriaRequest request)
         {
             GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();
