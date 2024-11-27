@@ -109,9 +109,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         }
         public async Task<GetSalesOrderResponse> CreateSalesOrderAsync(CreateSalesOrderRequest request)
         {
-            
             const string queueName = "SalesOrderQueue";
-
             var salesOrderId = await _redisDb.StringGetAsync("SalesOrderId");
             //string salesOrderId = _cookieImplementation.Get(CookieDataKey.SalesOrderId.ToString());
             Product product = await _productRepository.GetByIdAsync(request.ProductId);
@@ -162,22 +160,22 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 await _redisDb.StringSetAsync("SalesOrderId", response.SalesOrder.Id.ToString(), TimeSpan.FromMinutes(5));
                 _publisher.PublishMessage(queueName, $"Created Sales Order: {response.SalesOrder.Id}");
                 //_cookieImplementation.Set(CookieDataKey.SalesOrderId.ToString(), response.SalesOrder.Id.ToString(), 1, true, false);
-                 
-                
+
+                //It is for real-time Notification about created salesOrder in UnapproveSalesOrder
                 var approvalMessage = new SalesOrderApprovalMessage
                 {
                     SalesOrderId = response.SalesOrder.Id,
                     IsApproved = false,  // Initial approval status
                     Status = "Pending Approval" // Set initial status
                 };
-
                 var rabbitMesg = JsonSerializer.Serialize(approvalMessage);
+                _publisher.PublishMessage("SalesOrderApprovalQueue", rabbitMesg);
+                
+                //It is for real-time update UnApproveSalesOrder
                 if (salesOrders.Any())
                 {
                     await _hubContext.Clients.All.SendAsync("ReceiveSalesOrderUpdate");
-
                 }
-                _publisher.PublishMessage("SalesOrderApprovalQueue", rabbitMesg);
             }
             return response;
         }
