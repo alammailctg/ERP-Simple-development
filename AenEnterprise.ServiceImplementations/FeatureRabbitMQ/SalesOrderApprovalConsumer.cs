@@ -17,7 +17,6 @@ namespace AenEnterprise.ServiceImplementations.FeatureRabbitMQ
         public SalesOrderApprovalConsumer(IHubContext<NotificationHub> hubContext)
         {
             _hubContext = hubContext;
-
             // Set up RabbitMQ connection and channel
             var factory = new ConnectionFactory
             {
@@ -26,11 +25,8 @@ namespace AenEnterprise.ServiceImplementations.FeatureRabbitMQ
                 Password = "1234",      // Replace with your RabbitMQ password
                 VirtualHost = "/"       // Replace with your RabbitMQ virtual host, if applicable
             };
-
             var connection = factory.CreateConnection();
             _channel = connection.CreateModel();
-
-            // Declare the queue
             _channel.QueueDeclare(
                 queue: "SalesOrderApprovalQueue",
                 durable: false,
@@ -38,29 +34,20 @@ namespace AenEnterprise.ServiceImplementations.FeatureRabbitMQ
                 autoDelete: false,
                 arguments: null);
         }
-
         public void StartListening()
         {
             var consumer = new EventingBasicConsumer(_channel);
-
-            // Handle message reception
             consumer.Received += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-
                 Console.WriteLine($"[x] Received message: {message}");
-
-                // Send message to all connected SignalR clients
                 await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
             };
-
-            // Consume messages from the queue
             _channel.BasicConsume(
                 queue: "SalesOrderApprovalQueue",
                 autoAck: true,
                 consumer: consumer);
-
             Console.WriteLine(" [*] Waiting for messages.");
         }
     }
