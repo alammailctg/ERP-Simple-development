@@ -18,6 +18,10 @@ namespace AenEnterprise.DataAccess.Repository
             await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
         }
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
 
         public async Task AddRangeAsync(IEnumerable<T> entities)
         {
@@ -41,10 +45,7 @@ namespace AenEnterprise.DataAccess.Repository
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
-        {
-            return await _context.Set<T>().FindAsync(id);
-        }
+     
 
         public async Task<T> GetByStringAsync(Expression<Func<T, bool>> predicate)
         {

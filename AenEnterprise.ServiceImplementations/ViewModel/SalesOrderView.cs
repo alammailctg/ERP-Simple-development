@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static AenEnterprise.ServiceImplementations.Implementation.SalesOrderService;
 
 namespace AenEnterprise.ServiceImplementations.ViewModel
 {
@@ -21,8 +22,10 @@ namespace AenEnterprise.ServiceImplementations.ViewModel
         public string DeliveryOrderNo { get; set; }
         public string InvoiceNo { get; set; }
         public string SalesOrderNo { get; set; } = string.Empty;
+        public string CustomerName { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime OrderedDate { get; set; }
+        public List<SalesOrderDetails> SalesOrders { get; set; }
         public string OrderDateInFormat
         {
             get
@@ -33,7 +36,7 @@ namespace AenEnterprise.ServiceImplementations.ViewModel
 
         public string Description { get; set; } = string.Empty;
         public int CustomerId { get; set; }
-        public string CustomerName { get; set; }
+       
         public IEnumerable<InvoiceView> Invoices { get; set; }
         public IEnumerable<OrderItemView> OrderItems { get; set; }
         public IEnumerable<DeliveryOrderView> DeliveryOrders { get; set; }

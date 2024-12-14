@@ -69,6 +69,8 @@ Log.Information("Starting up the application...");
 
 // Add services to the container.
 builder.Host.UseSerilog(); // Use Serilog for logging
+builder.Services.AddHostedService<LongRunnigProcess>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<RabbitMQPublisher>();
@@ -167,7 +169,7 @@ builder.Services.AddTransient<ITrialBalanceGenerator, TrialBalanceGenerator>();
 builder.Services.AddTransient<IPayrollRepository, PayrollRepository>();
 
 //builder.Services.AddTransient<ISalesOrderService, SalesService>();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 

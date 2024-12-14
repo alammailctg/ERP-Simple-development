@@ -66,6 +66,14 @@ namespace AenEnterprise.FrontEndMvc.Controllers
             // Return the sales orders data or perform necessary operations
             return Ok();
         }
+
+        [HttpGet("GetAllUsingLinq")]
+        public async Task<ActionResult> GetSalesOrdersUsingLinq()
+        {
+            var response = await _salesOrderService.GetAllSalesOrderUsingLinq();
+            return Ok(response);
+        }
+
         //[Authorize(Roles = "Admin")]
         [Route("CreateSalesOrder")]
         [HttpPost]

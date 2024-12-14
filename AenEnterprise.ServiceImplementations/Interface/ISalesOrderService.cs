@@ -49,6 +49,7 @@ namespace AenEnterprise.ServiceImplementations.Interface
         Task<GetSalesOrderResponse> DeleteSalesOrderBasedOnOrderLimitAsync(DeleteOrderItemRequest request);
         Task<SalesOrder> GetSalesOrderByOrderItemStatusAsync();
         Task DeleteSalesOrderAsync(int salesOrderId);
+        Task<List<SalesOrderView>> GetAllSalesOrderUsingLinq();
 
 
     }

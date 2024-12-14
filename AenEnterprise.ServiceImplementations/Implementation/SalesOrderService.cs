@@ -31,6 +31,8 @@ using Twilio.Rest.Supersim.V1;
 using AenEnterprise.ServiceImplementations.FeatureRabbitMQ;
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace AenEnterprise.ServiceImplementations.Implementation
 {
@@ -54,6 +56,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         private IDispatcheRepository _dispatcheRepository;
         private ICookieImplementation _cookieImplementation;
         private IMapper _mapper;
+        private readonly IDistributedCache _cache;
         private readonly IDatabase _redisDb;
         private readonly RedisConnection _redisConnection;
         private readonly ILogger<SalesOrderService> _logger;
@@ -75,7 +78,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
         IDeliveryOrderItemRepository deliveryItemOrderRepository,
         IMapper mapper,
         RedisConnection redisConnection,
-        ILogger<SalesOrderService> logger, IHubContext<SalesOrderHub> hubContext, RabbitMQPublisher publisher)
+        ILogger<SalesOrderService> logger, IHubContext<SalesOrderHub> hubContext, RabbitMQPublisher publisher, IDistributedCache cache)
         {
             _context = new AenEnterpriseDbContext();
             _orderItemRepository = orderItemRepository;
@@ -97,9 +100,33 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             _redisDb = redisConnection.GetDatabase();
             _redisConnection = redisConnection;
             _logger = logger;
-
             _hubContext = hubContext;
             _publisher = publisher;
+            _cache = cache;
+        }
+
+        public async Task<List<SalesOrderView>> GetAllSalesOrderUsingLinq()
+        {
+            var salesOrders = from s in _context.SalesOrders
+                              join c in _context.Customers
+                              on s.CustomerId equals c.Id  // Correct join condition
+                              group s by c.Name into customerNameGroup
+                              select new SalesOrderView
+                              {
+                                  CustomerName = customerNameGroup.Key,
+                                  SalesOrders = customerNameGroup.Select(s => new SalesOrderDetails
+                                  {
+                                      SalesOrderNo = s.SalesOrderNo,
+                                      OrderedDate = s.OrderedDate
+                                  }).ToList()
+                              };
+
+            return await salesOrders.ToListAsync();
+        }
+        public class SalesOrderDetails
+        {
+            public string SalesOrderNo { get; set; }
+            public DateTime OrderedDate { get; set; }
         }
 
         public async Task<string> GetRedisSalesOrderId()
@@ -168,7 +195,7 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                     IsApproved = false,  // Initial approval status
                     Status = "Pending Approval" // Set initial status
                 };
-                var rabbitMesg = JsonSerializer.Serialize(approvalMessage);
+                var rabbitMesg = System.Text.Json.JsonSerializer.Serialize(approvalMessage);
                 _publisher.PublishMessage("SalesOrderApprovalQueue", rabbitMesg);
                 
                 //It is for real-time update UnApproveSalesOrder
@@ -249,17 +276,85 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             // Call the base method with statusId = 2 for approved orders
             return await GetAllSalesOrders(request, 2,true);
         }
-        public async Task<GetAllSalesOrderResponse> GetAllSalesOrders(SalesOrderSearchCriteriaRequest request,int statusId, bool isPartial)
+        //public async Task<GetAllSalesOrderResponse> GetAllSalesOrders(SalesOrderSearchCriteriaRequest request,int statusId, bool isPartial)
+        //{
+        //    GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();
+        //    IQueryable<SalesOrder> query = _context.SalesOrders
+        //        .Include(so => so.Customer)
+        //        .Include(so => so.OrderItems)
+        //        .ThenInclude(so => so.Unit)
+        //        .Include(so => so.OrderItems)
+        //        .ThenInclude(so=>so.Product)
+        //    .Where(so => so.OrderItems != null && so.OrderItems.Count()> 0 && so.OrderItems.Any(oi => oi.StatusId == statusId && oi.IsPartiallyApproved==isPartial));
+        //    // Apply optional filtering based on CriteriaName
+        //    if (!string.IsNullOrEmpty(request.CriteriaName))
+        //    {
+        //        query = query.Where(e =>
+        //            EF.Functions.Like(e.Customer.Name, $"%{request.CriteriaName}%") ||
+        //            EF.Functions.Like(e.SalesOrderNo, $"%{request.CriteriaName}%") ||
+        //            e.OrderItems.Any(oi =>
+        //                EF.Functions.Like(oi.Product.Name, $"%{request.CriteriaName}%") ||
+        //                EF.Functions.Like(oi.Price.ToString(), $"%{request.CriteriaName}%")
+        //            ) ||
+        //            EF.Functions.Like(e.Invoices.FirstOrDefault().InvoiceNo, $"%{request.CriteriaName}%") ||
+        //            EF.Functions.Like(e.DeliveryOrders.FirstOrDefault().DeliveryOrderNo, $"%{request.CriteriaName}%")
+        //       );
+        //    }
+        //    // Apply date range filtering if both dates are provided
+        //    if (request.DateFrom != null && request.DateTo != null)
+        //    {
+        //        query = query.Where(so => so.OrderedDate.Date >= request.DateFrom.Date &&
+        //                                   so.OrderedDate.Date <= request.DateTo.Date.AddDays(1));
+        //    }
+        //    // Get total count of filtered records
+        //    int totalCount = await query.CountAsync();
+        //    // Pagination setup
+        //    int totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
+        //    int skipCount = (request.PageNumber - 1) * request.PageSize;
+        //    // Apply pagination and sort
+        //    IEnumerable<SalesOrder> salesOrders = await query
+        //        .OrderByDescending(so => so.OrderedDate).OrderByDescending(so => so.Id)
+        //        .ThenByDescending(so => so.Id)
+        //        .Skip(skipCount)
+        //        .Take(request.PageSize)
+        //        .ToListAsync();
+        //    // Convert to view model
+        //    response.SalesOrders = salesOrders.ConvertToSalesOrderViews(_mapper, statusId, true);
+        //    response.TotalPages = totalPages;
+        //    response.PageNumber = request.PageNumber;
+        //    response.PageSize = request.PageSize;
+        //    response.TotalCount = totalCount;
+           
+
+        //    await _unitOfWork.SaveAsync();
+
+        //    return response;
+        //}
+
+
+        public async Task<GetAllSalesOrderResponse> GetAllSalesOrders(SalesOrderSearchCriteriaRequest request, int statusId, bool isPartial)
         {
-            GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();
+            GetAllSalesOrderResponse response;
+            string cacheKey = $"SalesOrders_{statusId}_{isPartial}_{request.PageNumber}_{request.PageSize}_{request.CriteriaName}_{request.DateFrom}_{request.DateTo}";
+
+            // Check if the response is in Redis cache
+            var cachedData = await _cache.GetStringAsync(cacheKey);
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                // Deserialize and return cached response
+                response = JsonConvert.DeserializeObject<GetAllSalesOrderResponse>(cachedData);
+                return response;
+            }
+
             IQueryable<SalesOrder> query = _context.SalesOrders
                 .Include(so => so.Customer)
                 .Include(so => so.OrderItems)
                 .ThenInclude(so => so.Unit)
                 .Include(so => so.OrderItems)
-                .ThenInclude(so=>so.Product)
-            .Where(so => so.OrderItems != null && so.OrderItems.Count()> 0 && so.OrderItems.Any(oi => oi.StatusId == statusId && oi.IsPartiallyApproved==isPartial));
-            // Apply optional filtering based on CriteriaName
+                .ThenInclude(so => so.Product)
+                .Where(so => so.OrderItems != null && so.OrderItems.Count() > 0 &&
+                             so.OrderItems.Any(oi => oi.StatusId == statusId && oi.IsPartiallyApproved == isPartial));
+
             if (!string.IsNullOrEmpty(request.CriteriaName))
             {
                 query = query.Where(e =>
@@ -271,38 +366,55 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                     ) ||
                     EF.Functions.Like(e.Invoices.FirstOrDefault().InvoiceNo, $"%{request.CriteriaName}%") ||
                     EF.Functions.Like(e.DeliveryOrders.FirstOrDefault().DeliveryOrderNo, $"%{request.CriteriaName}%")
-               );
+                );
             }
-            // Apply date range filtering if both dates are provided
+
             if (request.DateFrom != null && request.DateTo != null)
             {
                 query = query.Where(so => so.OrderedDate.Date >= request.DateFrom.Date &&
                                            so.OrderedDate.Date <= request.DateTo.Date.AddDays(1));
             }
-            // Get total count of filtered records
+
             int totalCount = await query.CountAsync();
-            // Pagination setup
             int totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
             int skipCount = (request.PageNumber - 1) * request.PageSize;
-            // Apply pagination and sort
+
             IEnumerable<SalesOrder> salesOrders = await query
-                .OrderByDescending(so => so.OrderedDate).OrderByDescending(so => so.Id)
+                .OrderByDescending(so => so.OrderedDate)
                 .ThenByDescending(so => so.Id)
                 .Skip(skipCount)
                 .Take(request.PageSize)
                 .ToListAsync();
-            // Convert to view model
-            response.SalesOrders = salesOrders.ConvertToSalesOrderViews(_mapper, statusId, true);
-            response.TotalPages = totalPages;
-            response.PageNumber = request.PageNumber;
-            response.PageSize = request.PageSize;
-            response.TotalCount = totalCount;
-           
 
-            await _unitOfWork.SaveAsync();
+            response = new GetAllSalesOrderResponse
+            {
+                SalesOrders = salesOrders.ConvertToSalesOrderViews(_mapper, statusId, true),
+                TotalPages = totalPages,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = totalCount
+            };
+
+            // Cache the response in Redis
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Customize expiration
+            };
+
+            await _cache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(response), cacheOptions);
 
             return response;
         }
+
+
+
+
+
+
+
+
+
+
         public async Task<GetAllSalesOrderResponse> GetAllApprovedOrderItemsSummary(SalesOrderSearchCriteriaRequest request)
         {
             GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();

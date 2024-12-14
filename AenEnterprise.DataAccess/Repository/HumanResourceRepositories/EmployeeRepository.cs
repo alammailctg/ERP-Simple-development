@@ -7,6 +7,7 @@ namespace AenEnterprise.DataAccess.Repository.HumanResourceRepositories
     {
         public EmployeeRepository(AenEnterpriseDbContext context) : base(context)
         {
+
         }
     }
 }
