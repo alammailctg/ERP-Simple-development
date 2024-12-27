@@ -25,7 +25,6 @@ namespace AenEnterprise.ServiceImplementations.Mapping.Automappers
                 .ReverseMap(); // If reverse mapping is required
 
             CreateMap<OrderItem, OrderItemView>().ReverseMap();
-
           
             CreateMap<AccountGroup, AccountView>();
             CreateMap<JournalEntry, JournalEntryView>()

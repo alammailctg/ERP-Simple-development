@@ -18,11 +18,6 @@ namespace AenEnterprise.ServiceImplementations.Interface
     {
         Task<GetSalesOrderResponse> GetSalesOrderById(int salesOrderId);
         Task<string> GetRedisSalesOrderId();
-        Task<GetSalesOrderResponse> CreateSalesOrderAsync(CreateSalesOrderRequest request);
-        Task AddSalesOrdersAsync();
-        Task<GetAllSalesOrderResponse> ApprovalStatusOrderItemsAsync(UpdateSalesOrderApprovalStatusRequest request);
-        Task<GetAllSalesOrderResponse> GetAllUnApprovedOrderItems(SalesOrderSearchCriteriaRequest request);
-        Task<GetAllSalesOrderResponse> GetAllApprovedOrderItems(SalesOrderSearchCriteriaRequest request);
         Task<GetAllSalesOrderResponse> GetAllApprovedOrderItemsSummary(SalesOrderSearchCriteriaRequest request);
         //Task<GetAllSalesOrderResponse> GetAllUnApprovedInvoice(SalesOrderSearchCriteriaRequest request);
         Task<GetAllInvoiceResponse> GetAllUnApprovedInvoice(SalesOrderSearchCriteriaRequest request);
@@ -45,9 +40,8 @@ namespace AenEnterprise.ServiceImplementations.Interface
         Task CreateBankAccount();
         Task<GetSalesOrderResponse> DeleteOrderItemAsync(DeleteOrderItemRequest request);
         Task<GetSalesOrderResponse> DeleteSalesOrderAsync(DeleteOrderItemRequest request);
-        Task DeleteSalesOrderAndOrderItemAsync();
+         
         Task<GetSalesOrderResponse> DeleteSalesOrderBasedOnOrderLimitAsync(DeleteOrderItemRequest request);
-        Task<SalesOrder> GetSalesOrderByOrderItemStatusAsync();
         Task DeleteSalesOrderAsync(int salesOrderId);
         Task<List<SalesOrderView>> GetAllSalesOrderUsingLinq();
 

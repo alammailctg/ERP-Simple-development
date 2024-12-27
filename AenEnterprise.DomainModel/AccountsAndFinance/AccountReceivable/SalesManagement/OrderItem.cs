@@ -30,12 +30,12 @@ namespace AenEnterprise.DomainModel.AccountsAndFinance.AccountReceivable.SalesMa
         {
 
         }
-        public OrderItem(Product product, SalesOrder order, Unit unit, decimal quantity,
-           decimal price, decimal? discountPercent, decimal invoicedQuantity, int statusId, bool isActive)
+        public OrderItem(int productId, SalesOrder order,int unitId, decimal quantity,
+           decimal price, decimal? discountPercent,int statusId, bool isActive)
         {
-            _unit = unit;
+            UnitId = unitId;
             _salesOrder = order;
-            _product = product;
+            _productId = productId;
             _price = price;
             _quantity = quantity;
             _balanceQuantity = quantity;

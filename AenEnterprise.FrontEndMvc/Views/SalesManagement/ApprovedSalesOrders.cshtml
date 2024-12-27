@@ -9,23 +9,28 @@
 <script>
 
     $(document).ready(function () {
-
+        
         //ifgetSalesOrders will mention top of the setDefaultDates it will show error toISOString();
         setDefaultDates();
         getSalesOrders(1,10);
-
+        
         // Event listener for page selection
         $("#pageSelect").on("change", function () {
             var selectedPage = $(this).val(); // Get selected page number
             var pageSize = 10; // Set the desired page size
             getSalesOrders(parseInt(selectedPage), pageSize)
-
         });
-        
     });
+    function resetFilters() {
+        // Reset date inputs
+        document.getElementById('dateFromInput').value = '';
+        document.getElementById('dateToInput').value = '';
 
-
-
+        // Reset search criteria
+        document.getElementById('txtCriteriaName').value = '';
+        setDefaultDates();
+        getSalesOrders(1, 6);
+    }
     async function getSalesOrders(pageNumber, pageSize) {
         // Show loading indicator
         $("#loadingIndicator").show();
@@ -40,9 +45,6 @@
         // Pass startTime to GetAllSalesOrder
         await GetAllSalesOrder(pageNumber, pageSize, dateFromInput, dateToInput, criteriaName, startTime);
     }
-
-
-
     async function GetAllSalesOrder(pageNumber, pageSize, dateFrom, dateTo, criteriaName, startTime) {
         try {
             var jsonData = {
@@ -52,7 +54,7 @@
                 PageSize: pageSize,
                 CriteriaName: criteriaName
             };
-            var url = 'SalesOrder/GetAllApprovedSalesOrders';
+            var url = 'ApprovedSalesOrder/GetAll';
             var salesResponse = await getAllDataWithParameter(url, jsonData);
 
             // Display total items found

@@ -74,75 +74,8 @@ namespace AenEnterprise.FrontEndMvc.Controllers
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Admin")]
-        [Route("CreateSalesOrder")]
-        [HttpPost]
-        public async Task<IActionResult> CreateSalesOrderForm([FromBody] CreateSalesOrderFormWithItemsRequest request)
-        {
-            if (request == null || request.FormRequest == null)
-            {
-                return BadRequest("Request body is null or improperly formatted.");
-            }
+       
 
-            GetSalesOrderResponse response = new GetSalesOrderResponse();
-            foreach (var orderItem in request.OrderItemsRequests)
-            {
-                CreateSalesOrderRequest salesOrderRequest = new CreateSalesOrderRequest
-                {
-                    OrderedDate = request.FormRequest.OrderedDate,
-                    CustomerId = request.FormRequest.CustomerId,
-                    SalesOrderStatusId = 1,
-                    DeliveryPlane = string.IsNullOrEmpty(request.FormRequest.DeliveryPlane) ? null : request.FormRequest.DeliveryPlane,
-                    Description = string.IsNullOrEmpty(request.FormRequest.Description) ? null : request.FormRequest.Description,
-                    ProductId = orderItem.ProductId,
-                    Price = orderItem.Price,
-                    Quantity = orderItem.Quantity,
-                    UnitId = orderItem.UnitId,
-                    DiscountPercent = orderItem.DiscountPercent
-                };
-                response = await _salesOrderService.CreateSalesOrderAsync(salesOrderRequest);
-            }
-            return Ok(response);
-        }
-        //[Authorize(Roles = "Manager,Sales,Admin")]
-        [HttpPost("AddSalesOrders")]
-public async Task<IActionResult> AddSalesOrdersForm()
-{
-    await _salesOrderService.AddSalesOrdersAsync();
-    return Ok("Sales order created successfully");
-}
-
-//[Authorize(Roles ="Sales,Manager,Admin")]
-[HttpPost("ApproveOrderItems")]
-public async Task<IActionResult> ApprovalStatusOrderItemsForm([FromBody] List<SalesOrderUpdateApprovalStatusFormRequest> formRequests)
-{
-    GetAllSalesOrderResponse response = new GetAllSalesOrderResponse();
-
-    try
-    {
-        foreach (var formRequest in formRequests)
-        {
-            var request = new UpdateSalesOrderApprovalStatusRequest
-            {
-                SalesOrderId = formRequest.SalesOrderId,
-                StatusId = formRequest.StatusId,
-                OrderItemId = formRequest.OrderItemId
-            };
-
-            response = await _salesOrderService.ApprovalStatusOrderItemsAsync(request);
-        }
-        return Ok(response);
-    }
-    catch (Exception ex)
-    {
-        // Log the exception or handle it as needed
-        // For example, you can log it to a file or a logging system
-        Console.WriteLine($"Exception occurred: {ex.Message}");
-
-        // Return a meaningful error response
-        return StatusCode(500, "An error occurred while processing the request.");
-    }
-}
 
 [HttpPost("ApproveInvoices")]
 public async Task<IActionResult> ApproveInvoiceForm([FromBody] List<SalesOrderUpdateApprovalStatusFormRequest> formRequests)
@@ -278,13 +211,7 @@ public async Task<IActionResult> DeleteOrderItems([FromBody] DeleteOrderItemForm
 //    await _salesOrderService.DeleteSalesOrderAndOrderItemAsync();
 //}
 
-[Route("CancelSalesOrder")]
-[HttpPost]
-public async Task<IActionResult> CancelSalesOrderForm()
-{
-    await _salesOrderService.DeleteSalesOrderAndOrderItemAsync();
-    return Ok();
-}
+
 
         [Route("DeleteSalesOrderBySalesOrderId")]
         [HttpPost]
@@ -295,19 +222,7 @@ public async Task<IActionResult> CancelSalesOrderForm()
         }
 
         
-//[Authorize(Roles="Manager,Admin")]
-[HttpPost("GetAllUnApprovedSalesOrders")]
-public async Task<IActionResult> GetAllUnApprovedSalesOrdersByCriteria(SalesOrderSearchCriteriaFormRequest formRequest)
-{
-    SalesOrderSearchCriteriaRequest request = new SalesOrderSearchCriteriaRequest();
-    request.PageNumber = formRequest.PageNumber;
-    request.PageSize = formRequest.PageSize;
-    request.DateFrom = formRequest.DateFrom;
-    request.DateTo = formRequest.DateTo;
-    request.CriteriaName = formRequest.CriteriaName;
-    var SalesOrder = await _salesOrderService.GetAllUnApprovedOrderItems(request);
-    return Ok(SalesOrder);
-}
+
 
 //[HttpGet("GetPaginationLinks")]
 //public ActionResult<IEnumerable<string>> GetPaginationLinks(int totalPages, int currentPage = 1, int pageSize = 6)
@@ -326,18 +241,7 @@ public async Task<IActionResult> GetAllUnApprovedSalesOrdersByCriteria(SalesOrde
 //}
 
 //[Authorize(Roles = "Manager,Sales,Admin")]
-[HttpPost("GetAllApprovedSalesOrders")]
-public async Task<IActionResult> GetAllApprovedSalesOrdersByCriteria(SalesOrderSearchCriteriaFormRequest formRequest)
-{
-    SalesOrderSearchCriteriaRequest request = new SalesOrderSearchCriteriaRequest();
-    request.PageNumber = formRequest.PageNumber;
-    request.PageSize = formRequest.PageSize;
-    request.DateFrom = formRequest.DateFrom;
-    request.DateTo = formRequest.DateTo;
-    request.CriteriaName = formRequest.CriteriaName;
-    var SalesOrder = await _salesOrderService.GetAllApprovedOrderItems(request);
-    return Ok(SalesOrder);
-}
+
 
 //[Authorize(Roles = "Manager,Sales,Admin")]
 [HttpPost("GetAllApprovedOrderItemsSummary")]

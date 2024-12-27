@@ -43,16 +43,15 @@ namespace AenEnterprise.DomainModel.AccountsAndFinance.AccountReceivable.SalesMa
         public IEnumerable<Invoice> Invoices { get { return _invoices; } }
         public IEnumerable<DeliveryOrder> DeliveryOrders { get => _deliveryOrders; set => _deliveryOrders = value; }
         public IEnumerable<DispatcheOrder> DispatcheOrders { get => _dispatcheOrders; set => _dispatcheOrders = value; }
-        public void CreateOrderItem(Product product,
-            Unit unit, decimal quantity, decimal price, decimal? discountPercent,
-            decimal invoiceQuantity, int statusId, bool isActive)
+        public void CreateOrderItem(int productId, int unitId, decimal quantity, decimal price, decimal? discountPercent,
+            int statusId, bool isActive)
         {
-            _orderItems.Add(OrderItemFactory.CreateOrderItemFactory(product, this, unit, quantity, price, discountPercent, invoiceQuantity, statusId, isActive));
+            _orderItems.Add(OrderItemFactory.CreateOrderItemFactory(productId, this, unitId, quantity, price, discountPercent, statusId, isActive));
         }
-        public void UpdateOrderItem(Product product, SalesOrder salesOrder, Unit unit, decimal quantity, decimal price, decimal discountPercent, decimal invoiceQuantity, int statusId, bool isActive)
-        {
-            _orderItems.Add(OrderItemFactory.CreateOrderItemFactory(product, salesOrder, unit, quantity, price, discountPercent, invoiceQuantity, statusId, isActive));
-        }
+        //public void UpdateOrderItem(Product product, SalesOrder salesOrder, Unit unit, decimal quantity, decimal price, decimal discountPercent, decimal invoiceQuantity, int statusId, bool isActive)
+        //{
+        //    _orderItems.Add(OrderItemFactory.CreateOrderItemFactory(product, salesOrder, unit, quantity, price, discountPercent, statusId, isActive));
+        //}
 
 
         public void setOrderItem(OrderItem orderItem, decimal quantity)

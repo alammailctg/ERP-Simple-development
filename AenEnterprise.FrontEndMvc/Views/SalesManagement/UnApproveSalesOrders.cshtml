@@ -58,7 +58,7 @@
                 PageSize: pageSize,
                 CriteriaName: criteriaName
             };
-            var url = 'SalesOrder/GetAllUnApprovedSalesOrders';
+            var url = 'PendingApprovalSalesOrder/GetAll';
             var salesResponse = await getAllDataWithParameter(url, jsonData);
 
             // Display total items found
@@ -104,10 +104,10 @@
                 return { StatusId: statusId, SalesOrderId: salesOrderId, OrderItemId: orderItemId };
             }).get();
 
-            const url = 'SalesOrder/ApproveOrderItems';
-            await postArrayDataWAenEnterpriseLicenseithParameter(url, postArr, () => {
+            const url = 'PendingApprovalSalesOrder/ApprovalAction';
+            await postArrayDataWithParameter(url, postArr, () => {
                 const currentPage = parseInt($('.page-link.active').text().trim());
-                getSalesOrders(currentPage, 6);
+                getSalesOrders(currentPage, 10);
             });
         }
     }

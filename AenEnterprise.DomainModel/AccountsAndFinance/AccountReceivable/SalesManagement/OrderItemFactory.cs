@@ -9,10 +9,10 @@ namespace AenEnterprise.DomainModel.AccountsAndFinance.AccountReceivable.SalesMa
 {
     public class OrderItemFactory
     {
-        public static OrderItem CreateOrderItemFactory(Product product, SalesOrder order,
-            Unit unit, decimal price, decimal quantity, decimal? discountPercent, decimal invoiceQuantity, int statusId, bool isActive)
+        public static OrderItem CreateOrderItemFactory(int productId, SalesOrder order,
+            int unitId, decimal price, decimal quantity, decimal? discountPercent,int statusId, bool isActive)
         {
-            return new OrderItem(product, order, unit, price, quantity, discountPercent, invoiceQuantity, statusId, isActive);
+            return new OrderItem(productId, order, unitId,  quantity, price, discountPercent, statusId, isActive);
         }
     }
 }

@@ -29,7 +29,6 @@ using StackExchange.Redis;
 using AenEnterprise.DataAccess.RepositoryInterface.Blogs;
 using AenEnterprise.DataAccess.Repository.BlogsRepository;
 using AenEnterprise.DomainModel.BlogsDomain;
-using AenEnterprise.ServiceImplementations.Implementation.JwtTwoFactorAuth;
 using Serilog;
 using AenEnterprise.ServiceImplementations.Implementation.AccountsService;
 using AenEnterprise.DataAccess.RepositoryInterface.AccountRepositoriesInterface;
@@ -51,7 +50,11 @@ using AenEnterprise.ServiceImplementations.Mapping.Automappers.GeneralLedger;
 using AenEnterprise.DomainModel.AccountsAndFinance.GeneralLedger.GeneralLedgerInterface;
 using AenEnterprise.DomainModel.AccountsAndFinance.GeneralLedger;
 using AenEnterprise.DomainModel.InventoryManagement;
-using AenEnterprise.ServiceImplementations.FeatureRabbitMQ;
+using AspNetCore.ReportingServices.ReportProcessing.OnDemandReportObjectModel;
+using AenEnterprise.ServiceImplementations.Implementation.SalesOrderImplementation;
+using AenEnterprise.ServiceImplementations.MessageBroker;
+using Microsoft.AspNetCore.SignalR;
+using AenEnterprise.ServiceImplementations.SignalRFeature;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,14 +72,11 @@ Log.Information("Starting up the application...");
 
 // Add services to the container.
 builder.Host.UseSerilog(); // Use Serilog for logging
-builder.Services.AddHostedService<LongRunnigProcess>();
-
+ 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<RabbitMQPublisher>();
-builder.Services.AddHostedService<RabbitMQConsumer>();
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<SalesOrderApprovalConsumer>(); // Add RabbitMQ Consumer
+
 //BlogEngine Service
 builder.Services.AddTransient<IBlogEngineService, BlogEngineService>();
 builder.Services.AddTransient<IBlogCategoryRepository, BlogCategoryRepository>();
@@ -84,7 +84,15 @@ builder.Services.AddTransient<IPostRepository, PostRepository>();
 builder.Services.AddTransient<ICommentRepository, CommentRepository>();
 
 //Start EF connectionstring
-builder.Services.AddDbContext<AenEnterpriseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("AenDbEnterpriseConnection")),ServiceLifetime.Scoped);
+builder.Services.AddDbContext<AenEnterpriseDbContext>(options => 
+options.UseSqlServer(builder.Configuration.GetConnectionString("AenDbEnterpriseConnection")), ServiceLifetime.Scoped);
+
+
+
+
+
+
+
 //End
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -122,6 +130,7 @@ builder.Services.AddTransient<IAccountPayableService, AccountPayableService>();
 builder.Services.AddTransient<IGeneralLedgerService, GeneralLedgerService>();
 builder.Services.AddTransient<IAccountRepository, AccountRepository>();
 
+
 //Human Resource
 builder.Services.AddTransient<IAllowanceRepository, AllowanceRepository>();
 builder.Services.AddTransient<IBenefitRepository, BenefitRepository>();
@@ -148,7 +157,10 @@ builder.Services.AddTransient<IProductionOrderItemValidator, DuplicateProduction
 var repositories = new[] 
 { 
     typeof(ISalesOrderRepository), 
-    typeof(ISalesOrderService) 
+    typeof(ISalesOrderService), 
+    typeof(IApprovedSalesOrderService),
+    typeof(IPendingSalesOrderService),
+    typeof(ICreateSalesOrderService)
 };
 
 foreach (var repo in repositories)
@@ -157,6 +169,8 @@ foreach (var repo in repositories)
     builder.Services.AddScoped(repo, implementation);
 }
 
+
+builder.Services.AddTransient<IEFQueryingService, EFQueryingService>();
 
 
 builder.Services.AddTransient<IInvoiceService, InvoiceService>();
@@ -177,6 +191,7 @@ builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<ISalesOrderStatusRepository, SalesOrderStatusRepository>();
 builder.Services.AddTransient<IUnitRepository, UnitRepository>();
 builder.Services.AddTransient<IOrderItemRepository, OrderItemRepository>();
+ 
 
 builder.Services.AddTransient<IInventoryService, InventoryService>();
 builder.Services.AddTransient<IDeliveryOrderRepository, DeliveryOrderRepository>();
@@ -205,7 +220,7 @@ builder.Services.AddSession(options =>
 
 
 // Redis configuration without maxconnections
-var redisConnectionString = "host.docker.internal:6379,allowAdmin=true,connectTimeout=5000,syncTimeout=5000,abortConnect=false";
+var redisConnectionString = "localhost:6379,allowAdmin=true,connectTimeout=5000,syncTimeout=5000,abortConnect=false";
 builder.Services.AddSingleton(new RedisConnection(redisConnectionString)); // Register RedisConnection
 // Add Redis connection configuration
 var connectionMultiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
@@ -238,8 +253,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
             ValidateIssuer = false,
-            ValidateAudience = false
+            ValidateAudience =false
         };
+
     });
  
 builder.Services.AddRazorPages();  // Razor Pages
@@ -258,6 +274,11 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.AddSingleton<IMessagePublish, SalesOrderCreationNotificationPublisher>();
+builder.Services.AddSingleton<SalesOrderApprovalConsumer>();
+builder.Services.AddHostedService<SalesOrderApprovalConsumerBackgroundService>();
+
+builder.Services.AddSignalR();
 var app = builder.Build();
  
 //Report Environment configure
@@ -287,10 +308,11 @@ app.UseAuthorization();
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<NotificationHub>("/notificationHub");
-app.MapHub<SalesOrderHub>("/salesOrderHub");
 
-var salesOrderConsumer = app.Services.GetRequiredService<SalesOrderApprovalConsumer>();
-salesOrderConsumer.StartListening();
+app.MapHub<ChatHub>("/chatHub");
+
+
+
 app.Run();
 //configureMapster();
 

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AenEnterprise.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class createERPTable : Migration
+    public partial class InitialTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1873,8 +1873,8 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "Id", "AnnualRevenue", "CompanyAddress", "CompanyEmail", "CompanyPhone", "Country", "CreatedDate", "ExpiryDate", "FullName", "IncorporationDate", "IndustryType", "InvoiceAddress", "IsDeleted", "IsMultipleWareHouse", "IsPrimary", "IsPubliclyListed", "Name", "RegistrationNumber", "TaxIdentifier", "VATAreaCode", "VATCode", "WebPageAddress" },
                 values: new object[,]
                 {
-                    { 1, 1000000.00m, "123 Sample St", "company@example.com", "123-456-7890", "Sample Country", new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7876), new DateTime(2029, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7879), "Full Name", new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7849), "Sample Industry", "456 Invoice St", false, true, true, false, "Company B", "123456789", "TAX123", "Area-123", "VAT-123", "www.company.com" },
-                    { 2, 1000000.00m, "123 Sample St", "company@example.com", "123-456-7890", "Sample Country", new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7895), new DateTime(2029, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7896), "Full Name", new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7891), "Sample Industry", "456 Invoice St", false, true, true, false, "Company A", "123488796", "TAX123", "Area-123", "VAT-123", "www.company.com" }
+                    { 1, 1000000.00m, "123 Sample St", "company@example.com", "123-456-7890", "Sample Country", new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8274), new DateTime(2029, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8276), "Full Name", new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8248), "Sample Industry", "456 Invoice St", false, true, true, false, "Company B", "123456789", "TAX123", "Area-123", "VAT-123", "www.company.com" },
+                    { 2, 1000000.00m, "123 Sample St", "company@example.com", "123-456-7890", "Sample Country", new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8291), new DateTime(2029, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8292), "Full Name", new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8288), "Sample Industry", "456 Invoice St", false, true, true, false, "Company A", "123488796", "TAX123", "Area-123", "VAT-123", "www.company.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -1882,26 +1882,26 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "Id", "Address", "Balance", "CreatedDate", "Description", "MobileNo", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Dhaka", 200.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8839), "This is Plate Customer", "01887969696", "Alam" },
-                    { 2, "Dhaka", 1000.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8863), "This is Brass Customer", "01887969696", "Shamim Enterprise" },
-                    { 3, "Chittagong", 500.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8867), "This is Plate Customer", "01887969696", "Shahab Uddin" },
-                    { 4, "Dhaka", 500.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8871), "This is Abdul Matin's Customer", "01887969696", "Abdul Matin" },
-                    { 5, "Dhaka", 4100.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8874), "This is Abdur Rahman's Customer", "01887969696", "Abdur Rahman" },
-                    { 6, "Dhaka", 400.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8877), "This is Abdus Salam's Customer", "01887969696", "Abdus Salam" },
-                    { 7, "Dhaka", 3300.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8880), "This is Abul Bashar's Customer", "01887969696", "Abul Bashar" },
-                    { 8, "Dhaka", 2200.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8882), "This is Abul Kashem's Customer", "01887969696", "Abul Kashem" },
-                    { 9, "Dhaka", 1100.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8885), "This is Abutaher's Customer", "01887969696", "Abutaher" },
-                    { 10, "Dhaka", 4500.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8888), "This is Agrabad Office's Customer", "01887969696", "Agrabad Office" },
-                    { 11, "Dhaka", 600.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8891), "This is Akkas's Customer", "01887969696", "Akkas" },
-                    { 12, "Dhaka", 2000.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8894), "This is Al Madina's Customer", "01887969696", "Al Madina" },
-                    { 13, "Dhaka", 200.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8897), "This is Alamgir's Customer", "01887969696", "Alamgir" },
-                    { 14, "Dhaka", 800.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8900), "This is AR Enterprise's Customer", "01887969696", "AR Enterprise" },
-                    { 15, "Dhaka", 4500.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8903), "This is Ayub Khan's Customer", "01887969696", "Ayub Khan" },
-                    { 16, "Dhaka", 600.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8906), "This is AZ Brothers' Customer", "01887969696", "AZ Brothers" },
-                    { 17, "Dhaka", 200.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8908), "This is Bablu's Customer", "01887969696", "Bablu" },
-                    { 18, "Dhaka", 14000.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8911), "This is Bacha Meah's Customer", "01887969696", "Bacha Meah" },
-                    { 19, "Dhaka", 2200.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8914), "This is Bismillah's Customer", "01887969696", "Bismillah" },
-                    { 20, "Dhaka", 100.00m, new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8917), "This is Dalehsar Iron's Customer", "01887969696", "Dalehsar Iron" }
+                    { 1, "Dhaka", 200.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(924), "This is Plate Customer", "01887969696", "Alam" },
+                    { 2, "Dhaka", 1000.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(951), "This is Brass Customer", "01887969696", "Shamim Enterprise" },
+                    { 3, "Chittagong", 500.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(955), "This is Plate Customer", "01887969696", "Shahab Uddin" },
+                    { 4, "Dhaka", 500.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(957), "This is Abdul Matin's Customer", "01887969696", "Abdul Matin" },
+                    { 5, "Dhaka", 4100.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(960), "This is Abdur Rahman's Customer", "01887969696", "Abdur Rahman" },
+                    { 6, "Dhaka", 400.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(963), "This is Abdus Salam's Customer", "01887969696", "Abdus Salam" },
+                    { 7, "Dhaka", 3300.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(965), "This is Abul Bashar's Customer", "01887969696", "Abul Bashar" },
+                    { 8, "Dhaka", 2200.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(968), "This is Abul Kashem's Customer", "01887969696", "Abul Kashem" },
+                    { 9, "Dhaka", 1100.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1059), "This is Abutaher's Customer", "01887969696", "Abutaher" },
+                    { 10, "Dhaka", 4500.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1063), "This is Agrabad Office's Customer", "01887969696", "Agrabad Office" },
+                    { 11, "Dhaka", 600.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1066), "This is Akkas's Customer", "01887969696", "Akkas" },
+                    { 12, "Dhaka", 2000.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1068), "This is Al Madina's Customer", "01887969696", "Al Madina" },
+                    { 13, "Dhaka", 200.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1071), "This is Alamgir's Customer", "01887969696", "Alamgir" },
+                    { 14, "Dhaka", 800.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1074), "This is AR Enterprise's Customer", "01887969696", "AR Enterprise" },
+                    { 15, "Dhaka", 4500.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1076), "This is Ayub Khan's Customer", "01887969696", "Ayub Khan" },
+                    { 16, "Dhaka", 600.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1079), "This is AZ Brothers' Customer", "01887969696", "AZ Brothers" },
+                    { 17, "Dhaka", 200.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1081), "This is Bablu's Customer", "01887969696", "Bablu" },
+                    { 18, "Dhaka", 14000.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1084), "This is Bacha Meah's Customer", "01887969696", "Bacha Meah" },
+                    { 19, "Dhaka", 2200.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1087), "This is Bismillah's Customer", "01887969696", "Bismillah" },
+                    { 20, "Dhaka", 100.00m, new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1089), "This is Dalehsar Iron's Customer", "01887969696", "Dalehsar Iron" }
                 });
 
             migrationBuilder.InsertData(
@@ -1946,10 +1946,10 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "Id", "CreatedDate", "ModifiedDate", "RoleDescription", "RoleName" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5489), new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5492), "Administrator with full access to system", "Admin" },
-                    { 2, new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5496), new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5497), "Manager with access to oversee operations", "Manager" },
-                    { 3, new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5500), new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5500), "Regular user with limited access", "User" },
-                    { 4, new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5502), new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5503), "Guest user with read-only access", "Guest" }
+                    { 1, new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2032), new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2034), "Administrator with full access to system", "Admin" },
+                    { 2, new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2037), new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2038), "Manager with access to oversee operations", "Manager" },
+                    { 3, new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2040), new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2040), "Regular user with limited access", "User" },
+                    { 4, new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2042), new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2043), "Guest user with read-only access", "Guest" }
                 });
 
             migrationBuilder.InsertData(
@@ -1983,8 +1983,8 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "Id", "ApplicationDate", "CandidateName", "Department", "InterviewDate", "Position", "Status" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 9, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(403), "John Doe", "IT", new DateTime(2024, 10, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(437), "Software Engineer", "Hired" },
-                    { 2, new DateTime(2024, 8, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(447), "Jane Smith", "Operations", new DateTime(2024, 9, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(448), "Project Manager", "Offered" }
+                    { 1, new DateTime(2024, 10, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5363), "John Doe", "IT", new DateTime(2024, 11, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5391), "Software Engineer", "Hired" },
+                    { 2, new DateTime(2024, 9, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5395), "Jane Smith", "Operations", new DateTime(2024, 10, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5397), "Project Manager", "Offered" }
                 });
 
             migrationBuilder.InsertData(
@@ -1999,7 +1999,7 @@ namespace AenEnterprise.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Password", "PasswordHash", "PasswordSalt", "RefreshToken", "TokenCreated", "TokenExpires", "Username" },
-                values: new object[] { 1, "1234", new byte[0], new byte[0], "sample_refresh_token", new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(2909), new DateTime(2024, 11, 27, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(2913), "admin" });
+                values: new object[] { 1, "1234", new byte[0], new byte[0], "sample_refresh_token", new DateTime(2024, 12, 25, 5, 40, 50, 58, DateTimeKind.Utc).AddTicks(9152), new DateTime(2025, 1, 1, 5, 40, 50, 58, DateTimeKind.Utc).AddTicks(9155), "admin" });
 
             migrationBuilder.InsertData(
                 table: "Vendors",
@@ -2030,7 +2030,7 @@ namespace AenEnterprise.DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "Branches",
                 columns: new[] { "BranchId", "BranchAddress", "BranchEmail", "BranchName", "BranchPhone", "City", "CompanyId", "CreatedDate", "IsActive", "OpeningDate", "PostalCode", "ProductionOrderId", "State" },
-                values: new object[] { 1, "456 Central Road, Dhaka, Bangladesh", "dhaka.branch@aenenterprise.com", "Dhaka Branch", "+880987654321", "Dhaka", 1, new DateTime(2024, 11, 20, 12, 47, 4, 403, DateTimeKind.Local).AddTicks(5490), true, new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "1205", 0, "Dhaka Division" });
+                values: new object[] { 1, "456 Central Road, Dhaka, Bangladesh", "dhaka.branch@aenenterprise.com", "Dhaka Branch", "+880987654321", "Dhaka", 1, new DateTime(2024, 12, 25, 11, 40, 50, 61, DateTimeKind.Local).AddTicks(5524), true, new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "1205", 0, "Dhaka Division" });
 
             migrationBuilder.InsertData(
                 table: "Products",
@@ -2101,8 +2101,8 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "Id", "ForecastDate", "ForecastedDemand", "ProductId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 11, 20, 6, 47, 4, 381, DateTimeKind.Utc).AddTicks(3412), 1000, 1 },
-                    { 2, new DateTime(2024, 11, 20, 6, 47, 4, 381, DateTimeKind.Utc).AddTicks(3416), 500, 2 }
+                    { 1, new DateTime(2024, 12, 25, 5, 40, 50, 28, DateTimeKind.Utc).AddTicks(6841), 1000, 1 },
+                    { 2, new DateTime(2024, 12, 25, 5, 40, 50, 28, DateTimeKind.Utc).AddTicks(6846), 500, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -2119,8 +2119,8 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "JournalEntryId", "BranchId", "CompanyId", "CreatedDate", "Description", "EntryDate", "JournalEntryNo", "JournalName", "Partner", "ReferenceNumber", "TotalCredit", "TotalDebit" },
                 values: new object[,]
                 {
-                    { 1, 1, 1, new DateTime(2024, 11, 20, 12, 47, 4, 386, DateTimeKind.Local).AddTicks(7939), "Opening balance for the company", new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "JE20231101", "Opening Balance", 0, "REF123", 0m, 0m },
-                    { 2, 1, 1, new DateTime(2024, 11, 20, 12, 47, 4, 386, DateTimeKind.Local).AddTicks(8010), "Purchase of raw materials", new DateTime(2023, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "JE20231102", "Purchase Entry", 0, "REF124", 0m, 0m }
+                    { 1, 1, 1, new DateTime(2024, 12, 25, 11, 40, 50, 35, DateTimeKind.Local).AddTicks(3113), "Opening balance for the company", new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "JE20231101", "Opening Balance", 0, "REF123", 0m, 0m },
+                    { 2, 1, 1, new DateTime(2024, 12, 25, 11, 40, 50, 35, DateTimeKind.Local).AddTicks(3120), "Purchase of raw materials", new DateTime(2023, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "JE20231102", "Purchase Entry", 0, "REF124", 0m, 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -2128,8 +2128,8 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "JournalEntryLineId", "AccountGroupId", "CreatedDate", "CreditAmount", "DebitAmount", "Description", "JournalEntryId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local), 0.00m, 1000.00m, "Initial Journal Entry", 1 },
-                    { 2, 2, new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local), 500.00m, 0.00m, "Second Journal Entry", 1 }
+                    { 1, 1, new DateTime(2024, 12, 25, 0, 0, 0, 0, DateTimeKind.Local), 0.00m, 1000.00m, "Initial Journal Entry", 1 },
+                    { 2, 2, new DateTime(2024, 12, 25, 0, 0, 0, 0, DateTimeKind.Local), 500.00m, 0.00m, "Second Journal Entry", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -2137,34 +2137,29 @@ namespace AenEnterprise.DataAccess.Migrations
                 columns: new[] { "LedgerPostingId", "AccountGroupId", "Amount", "Description", "IsDebit", "PostingDate" },
                 values: new object[,]
                 {
-                    { 1, 1, 5000m, "Ledger posting 1", true, new DateTime(2024, 11, 20, 12, 47, 4, 387, DateTimeKind.Local).AddTicks(8098) },
-                    { 2, 2, 3000m, "Ledger posting 2", false, new DateTime(2024, 11, 20, 12, 47, 4, 387, DateTimeKind.Local).AddTicks(8118) }
+                    { 1, 1, 5000m, "Ledger posting 1", true, new DateTime(2024, 12, 25, 11, 40, 50, 44, DateTimeKind.Local).AddTicks(905) },
+                    { 2, 2, 3000m, "Ledger posting 2", false, new DateTime(2024, 12, 25, 11, 40, 50, 44, DateTimeKind.Local).AddTicks(917) }
                 });
 
             migrationBuilder.InsertData(
                 table: "PerformanceReviews",
                 columns: new[] { "Id", "EmployeeId", "Feedback", "ReviewDate", "Score" },
-                values: new object[] { 1, 1, "Excellent", new DateTime(2024, 11, 20, 12, 47, 4, 389, DateTimeKind.Local).AddTicks(3365), 5 });
+                values: new object[] { 1, 1, "Excellent", new DateTime(2024, 12, 25, 11, 40, 50, 46, DateTimeKind.Local).AddTicks(4040), 5 });
 
             migrationBuilder.InsertData(
                 table: "PortalAccesses",
                 columns: new[] { "PortalAccessID", "AccessLevel", "EmployeeID", "LastLoginDate", "Password", "Username" },
-                values: new object[] { 1, "Employee", 1, new DateTime(2024, 11, 20, 12, 47, 4, 389, DateTimeKind.Local).AddTicks(4440), "password123", "john.doe" });
-
-            migrationBuilder.InsertData(
-                table: "ProductionOrders",
-                columns: new[] { "Id", "AssignedToId", "BranchId", "CreatedDate", "DirectLaborCost", "InitialProductCost", "InitiatorId", "LastDateOfUpdate", "OrderPriorityId", "OtherInitialCosts", "ProductionEndDate", "ProductionOrderNo", "ProductionStartDate", "PurchaseCost", "Remarks", "ResourceId" },
-                values: new object[] { 1, 2, 1, new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local), 0m, 1000m, 1, new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local), 1, 0m, new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Local), "PO-001", new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local), 0m, "Initial Production Order", 1 });
+                values: new object[] { 1, "Employee", 1, new DateTime(2024, 12, 25, 11, 40, 50, 46, DateTimeKind.Local).AddTicks(5280), "password123", "john.doe" });
 
             migrationBuilder.InsertData(
                 table: "TimeTrackings",
                 columns: new[] { "Id", "CheckInTime", "CheckOutTime", "EmployeeId", "TimeOff", "WorkHours" },
-                values: new object[] { 1, new DateTime(2024, 11, 20, 4, 47, 4, 397, DateTimeKind.Local).AddTicks(2033), new DateTime(2024, 11, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(2048), 1, false, new TimeSpan(0, 8, 0, 0, 0) });
+                values: new object[] { 1, new DateTime(2024, 12, 25, 3, 40, 50, 54, DateTimeKind.Local).AddTicks(6872), new DateTime(2024, 12, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(6896), 1, false, new TimeSpan(0, 8, 0, 0, 0) });
 
             migrationBuilder.InsertData(
                 table: "Trainings",
                 columns: new[] { "Id", "Certificate", "CompletionDate", "CourseName", "EmployeeId", "TrainingStartDate" },
-                values: new object[] { 1, "Certified", new DateTime(2024, 12, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(3451), "Leadership", 1, new DateTime(2024, 11, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(3445) });
+                values: new object[] { 1, "Certified", new DateTime(2025, 1, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(8019), "Leadership", 1, new DateTime(2024, 12, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(8014) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountGroups_AccountTypeId",

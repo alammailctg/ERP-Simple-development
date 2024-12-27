@@ -119,7 +119,7 @@
         document.getElementById('txtOrderDate').value = today;
 
         $("#btnDiscard").on('click', function () {
-            var url = 'SalesOrder/CancelSalesOrder';
+            var url = 'CreateSalesOrder/CancelSalesOrder';
             var successCallback = function () {
                 resetForm();
                 location.reload();
@@ -286,7 +286,7 @@
             $("#salesNewOrderElement").html(html);
         };
 
-        var url = 'SalesOrder/CreateSalesOrder';
+        var url = 'CreateSalesOrder/Create';
         await postDataWithParameterAndReturn(url, jsonData, successCallback);
         AddSalesOrders();
         forwaredLink;

@@ -29,8 +29,6 @@ using AenEnterprise.ServiceImplementations.ViewModel.AuthenticationVM;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Connections.Features;
-using AenEnterprise.ServiceImplementations.Implementation.JwtTwoFactorAuth;
-
 namespace AenEnterprise.ServiceImplementations.Implementation
 {
     public class JwtAuthService : IJwtAuthService
@@ -183,7 +181,6 @@ namespace AenEnterprise.ServiceImplementations.Implementation
             // Check if the new request's username already exists in the HashSet
             if (uniqueUserNames.Contains(request.UserName) && uniqueUserNames.Contains(request.Password))
             {
-
                 var claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.NameIdentifier, request.Id.ToString()),
@@ -204,6 +201,8 @@ namespace AenEnterprise.ServiceImplementations.Implementation
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
                 var token = new JwtSecurityToken(
                     claims: claims,
+                    issuer: "http://localhost:5155/SalesManagement",
+                    audience: "http://localhost:5155/api/SalesOrder/GetAllUnApprovedSalesOrders",
                     expires: DateTime.UtcNow.AddHours(24),
                     signingCredentials: creds);
 

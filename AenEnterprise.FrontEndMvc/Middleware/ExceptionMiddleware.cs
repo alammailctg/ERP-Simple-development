@@ -15,7 +15,7 @@
         {
             try
             {
-                await next(context);
+                await next(context);// RequestDelegate used, public delegate Task RequestDelegate(HttpContext context); 
             }
             catch (Exception ex)
             {

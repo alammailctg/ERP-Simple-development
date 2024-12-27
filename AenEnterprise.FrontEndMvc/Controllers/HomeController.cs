@@ -103,5 +103,10 @@ namespace AenEnterprise.FrontEndMvc.Controllers
             return View();
         }
 
+        public IActionResult EFQuerying()
+        {
+            return View();
+        }
+
     }
 }

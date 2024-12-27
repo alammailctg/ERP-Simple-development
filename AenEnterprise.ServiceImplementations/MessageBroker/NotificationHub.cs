@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AenEnterprise.ServiceImplementations.FeatureRabbitMQ
+namespace AenEnterprise.ServiceImplementations.MessageBroker
 {
     public class NotificationHub : Hub
     {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AenEnterprise.DataAccess.Migrations
 {
     [DbContext(typeof(AenEnterpriseDbContext))]
-    [Migration("20241120064705_createERPTable")]
-    partial class createERPTable
+    [Migration("20241225054051_InitialTable")]
+    partial class InitialTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,7 +168,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 1,
                             Address = "Dhaka",
                             Balance = 200.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8839),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(924),
                             Description = "This is Plate Customer",
                             MobileNo = "01887969696",
                             Name = "Alam"
@@ -178,7 +178,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 2,
                             Address = "Dhaka",
                             Balance = 1000.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8863),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(951),
                             Description = "This is Brass Customer",
                             MobileNo = "01887969696",
                             Name = "Shamim Enterprise"
@@ -188,7 +188,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 3,
                             Address = "Chittagong",
                             Balance = 500.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8867),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(955),
                             Description = "This is Plate Customer",
                             MobileNo = "01887969696",
                             Name = "Shahab Uddin"
@@ -198,7 +198,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 4,
                             Address = "Dhaka",
                             Balance = 500.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8871),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(957),
                             Description = "This is Abdul Matin's Customer",
                             MobileNo = "01887969696",
                             Name = "Abdul Matin"
@@ -208,7 +208,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 5,
                             Address = "Dhaka",
                             Balance = 4100.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8874),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(960),
                             Description = "This is Abdur Rahman's Customer",
                             MobileNo = "01887969696",
                             Name = "Abdur Rahman"
@@ -218,7 +218,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 6,
                             Address = "Dhaka",
                             Balance = 400.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8877),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(963),
                             Description = "This is Abdus Salam's Customer",
                             MobileNo = "01887969696",
                             Name = "Abdus Salam"
@@ -228,7 +228,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 7,
                             Address = "Dhaka",
                             Balance = 3300.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8880),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(965),
                             Description = "This is Abul Bashar's Customer",
                             MobileNo = "01887969696",
                             Name = "Abul Bashar"
@@ -238,7 +238,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 8,
                             Address = "Dhaka",
                             Balance = 2200.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8882),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(968),
                             Description = "This is Abul Kashem's Customer",
                             MobileNo = "01887969696",
                             Name = "Abul Kashem"
@@ -248,7 +248,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 9,
                             Address = "Dhaka",
                             Balance = 1100.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8885),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1059),
                             Description = "This is Abutaher's Customer",
                             MobileNo = "01887969696",
                             Name = "Abutaher"
@@ -258,7 +258,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 10,
                             Address = "Dhaka",
                             Balance = 4500.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8888),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1063),
                             Description = "This is Agrabad Office's Customer",
                             MobileNo = "01887969696",
                             Name = "Agrabad Office"
@@ -268,7 +268,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 11,
                             Address = "Dhaka",
                             Balance = 600.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8891),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1066),
                             Description = "This is Akkas's Customer",
                             MobileNo = "01887969696",
                             Name = "Akkas"
@@ -278,7 +278,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 12,
                             Address = "Dhaka",
                             Balance = 2000.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8894),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1068),
                             Description = "This is Al Madina's Customer",
                             MobileNo = "01887969696",
                             Name = "Al Madina"
@@ -288,7 +288,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 13,
                             Address = "Dhaka",
                             Balance = 200.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8897),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1071),
                             Description = "This is Alamgir's Customer",
                             MobileNo = "01887969696",
                             Name = "Alamgir"
@@ -298,7 +298,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 14,
                             Address = "Dhaka",
                             Balance = 800.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8900),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1074),
                             Description = "This is AR Enterprise's Customer",
                             MobileNo = "01887969696",
                             Name = "AR Enterprise"
@@ -308,7 +308,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 15,
                             Address = "Dhaka",
                             Balance = 4500.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8903),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1076),
                             Description = "This is Ayub Khan's Customer",
                             MobileNo = "01887969696",
                             Name = "Ayub Khan"
@@ -318,7 +318,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 16,
                             Address = "Dhaka",
                             Balance = 600.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8906),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1079),
                             Description = "This is AZ Brothers' Customer",
                             MobileNo = "01887969696",
                             Name = "AZ Brothers"
@@ -328,7 +328,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 17,
                             Address = "Dhaka",
                             Balance = 200.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8908),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1081),
                             Description = "This is Bablu's Customer",
                             MobileNo = "01887969696",
                             Name = "Bablu"
@@ -338,7 +338,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 18,
                             Address = "Dhaka",
                             Balance = 14000.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8911),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1084),
                             Description = "This is Bacha Meah's Customer",
                             MobileNo = "01887969696",
                             Name = "Bacha Meah"
@@ -348,7 +348,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 19,
                             Address = "Dhaka",
                             Balance = 2200.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8914),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1087),
                             Description = "This is Bismillah's Customer",
                             MobileNo = "01887969696",
                             Name = "Bismillah"
@@ -358,7 +358,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 20,
                             Address = "Dhaka",
                             Balance = 100.00m,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 380, DateTimeKind.Local).AddTicks(8917),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 28, DateTimeKind.Local).AddTicks(1089),
                             Description = "This is Dalehsar Iron's Customer",
                             MobileNo = "01887969696",
                             Name = "Dalehsar Iron"
@@ -1064,7 +1064,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             JournalEntryId = 1,
                             BranchId = 1,
                             CompanyId = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 386, DateTimeKind.Local).AddTicks(7939),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 35, DateTimeKind.Local).AddTicks(3113),
                             Description = "Opening balance for the company",
                             EntryDate = new DateTime(2023, 11, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             JournalEntryNo = "JE20231101",
@@ -1079,7 +1079,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             JournalEntryId = 2,
                             BranchId = 1,
                             CompanyId = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 386, DateTimeKind.Local).AddTicks(8010),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 35, DateTimeKind.Local).AddTicks(3120),
                             Description = "Purchase of raw materials",
                             EntryDate = new DateTime(2023, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             JournalEntryNo = "JE20231102",
@@ -1134,7 +1134,7 @@ namespace AenEnterprise.DataAccess.Migrations
                         {
                             JournalEntryLineId = 1,
                             AccountGroupId = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            CreatedDate = new DateTime(2024, 12, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             CreditAmount = 0.00m,
                             DebitAmount = 1000.00m,
                             Description = "Initial Journal Entry",
@@ -1144,7 +1144,7 @@ namespace AenEnterprise.DataAccess.Migrations
                         {
                             JournalEntryLineId = 2,
                             AccountGroupId = 2,
-                            CreatedDate = new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local),
+                            CreatedDate = new DateTime(2024, 12, 25, 0, 0, 0, 0, DateTimeKind.Local),
                             CreditAmount = 500.00m,
                             DebitAmount = 0.00m,
                             Description = "Second Journal Entry",
@@ -1190,7 +1190,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Amount = 5000m,
                             Description = "Ledger posting 1",
                             IsDebit = true,
-                            PostingDate = new DateTime(2024, 11, 20, 12, 47, 4, 387, DateTimeKind.Local).AddTicks(8098)
+                            PostingDate = new DateTime(2024, 12, 25, 11, 40, 50, 44, DateTimeKind.Local).AddTicks(905)
                         },
                         new
                         {
@@ -1199,7 +1199,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Amount = 3000m,
                             Description = "Ledger posting 2",
                             IsDebit = false,
-                            PostingDate = new DateTime(2024, 11, 20, 12, 47, 4, 387, DateTimeKind.Local).AddTicks(8118)
+                            PostingDate = new DateTime(2024, 12, 25, 11, 40, 50, 44, DateTimeKind.Local).AddTicks(917)
                         });
                 });
 
@@ -1413,7 +1413,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             BranchPhone = "+880987654321",
                             City = "Dhaka",
                             CompanyId = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 12, 47, 4, 403, DateTimeKind.Local).AddTicks(5490),
+                            CreatedDate = new DateTime(2024, 12, 25, 11, 40, 50, 61, DateTimeKind.Local).AddTicks(5524),
                             IsActive = true,
                             OpeningDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostalCode = "1205",
@@ -1569,10 +1569,10 @@ namespace AenEnterprise.DataAccess.Migrations
                             CompanyEmail = "company@example.com",
                             CompanyPhone = "123-456-7890",
                             Country = "Sample Country",
-                            CreatedDate = new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7876),
-                            ExpiryDate = new DateTime(2029, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7879),
+                            CreatedDate = new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8274),
+                            ExpiryDate = new DateTime(2029, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8276),
                             FullName = "Full Name",
-                            IncorporationDate = new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7849),
+                            IncorporationDate = new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8248),
                             IndustryType = "Sample Industry",
                             InvoiceAddress = "456 Invoice St",
                             IsDeleted = false,
@@ -1594,10 +1594,10 @@ namespace AenEnterprise.DataAccess.Migrations
                             CompanyEmail = "company@example.com",
                             CompanyPhone = "123-456-7890",
                             Country = "Sample Country",
-                            CreatedDate = new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7895),
-                            ExpiryDate = new DateTime(2029, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7896),
+                            CreatedDate = new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8291),
+                            ExpiryDate = new DateTime(2029, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8292),
                             FullName = "Full Name",
-                            IncorporationDate = new DateTime(2019, 11, 20, 12, 47, 4, 413, DateTimeKind.Local).AddTicks(7891),
+                            IncorporationDate = new DateTime(2019, 12, 25, 11, 40, 50, 77, DateTimeKind.Local).AddTicks(8288),
                             IndustryType = "Sample Industry",
                             InvoiceAddress = "456 Invoice St",
                             IsDeleted = false,
@@ -2195,7 +2195,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             Id = 1,
                             EmployeeId = 1,
                             Feedback = "Excellent",
-                            ReviewDate = new DateTime(2024, 11, 20, 12, 47, 4, 389, DateTimeKind.Local).AddTicks(3365),
+                            ReviewDate = new DateTime(2024, 12, 25, 11, 40, 50, 46, DateTimeKind.Local).AddTicks(4040),
                             Score = 5
                         });
                 });
@@ -2238,7 +2238,7 @@ namespace AenEnterprise.DataAccess.Migrations
                             PortalAccessID = 1,
                             AccessLevel = "Employee",
                             EmployeeID = 1,
-                            LastLoginDate = new DateTime(2024, 11, 20, 12, 47, 4, 389, DateTimeKind.Local).AddTicks(4440),
+                            LastLoginDate = new DateTime(2024, 12, 25, 11, 40, 50, 46, DateTimeKind.Local).AddTicks(5280),
                             Password = "password123",
                             Username = "john.doe"
                         });
@@ -2315,20 +2315,20 @@ namespace AenEnterprise.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationDate = new DateTime(2024, 9, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(403),
+                            ApplicationDate = new DateTime(2024, 10, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5363),
                             CandidateName = "John Doe",
                             Department = "IT",
-                            InterviewDate = new DateTime(2024, 10, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(437),
+                            InterviewDate = new DateTime(2024, 11, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5391),
                             Position = "Software Engineer",
                             Status = "Hired"
                         },
                         new
                         {
                             Id = 2,
-                            ApplicationDate = new DateTime(2024, 8, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(447),
+                            ApplicationDate = new DateTime(2024, 9, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5395),
                             CandidateName = "Jane Smith",
                             Department = "Operations",
-                            InterviewDate = new DateTime(2024, 9, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(448),
+                            InterviewDate = new DateTime(2024, 10, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(5397),
                             Position = "Project Manager",
                             Status = "Offered"
                         });
@@ -2367,8 +2367,8 @@ namespace AenEnterprise.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CheckInTime = new DateTime(2024, 11, 20, 4, 47, 4, 397, DateTimeKind.Local).AddTicks(2033),
-                            CheckOutTime = new DateTime(2024, 11, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(2048),
+                            CheckInTime = new DateTime(2024, 12, 25, 3, 40, 50, 54, DateTimeKind.Local).AddTicks(6872),
+                            CheckOutTime = new DateTime(2024, 12, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(6896),
                             EmployeeId = 1,
                             TimeOff = false,
                             WorkHours = new TimeSpan(0, 8, 0, 0, 0)
@@ -2411,10 +2411,10 @@ namespace AenEnterprise.DataAccess.Migrations
                         {
                             Id = 1,
                             Certificate = "Certified",
-                            CompletionDate = new DateTime(2024, 12, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(3451),
+                            CompletionDate = new DateTime(2025, 1, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(8019),
                             CourseName = "Leadership",
                             EmployeeId = 1,
-                            TrainingStartDate = new DateTime(2024, 11, 20, 12, 47, 4, 397, DateTimeKind.Local).AddTicks(3445)
+                            TrainingStartDate = new DateTime(2024, 12, 25, 11, 40, 50, 54, DateTimeKind.Local).AddTicks(8014)
                         });
                 });
 
@@ -2593,27 +2593,6 @@ namespace AenEnterprise.DataAccess.Migrations
                     b.HasIndex("OrderPriorityId");
 
                     b.ToTable("ProductionOrders");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AssignedToId = 2,
-                            BranchId = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local),
-                            DirectLaborCost = 0m,
-                            InitialProductCost = 1000m,
-                            InitiatorId = 1,
-                            LastDateOfUpdate = new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local),
-                            OrderPriorityId = 1,
-                            OtherInitialCosts = 0m,
-                            ProductionEndDate = new DateTime(2024, 11, 25, 0, 0, 0, 0, DateTimeKind.Local),
-                            ProductionOrderNo = "PO-001",
-                            ProductionStartDate = new DateTime(2024, 11, 20, 0, 0, 0, 0, DateTimeKind.Local),
-                            PurchaseCost = 0m,
-                            Remarks = "Initial Production Order",
-                            ResourceId = 1
-                        });
                 });
 
             modelBuilder.Entity("AenEnterprise.DomainModel.InventoryManagement.ProductionOrderItem", b =>
@@ -2890,14 +2869,14 @@ namespace AenEnterprise.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ForecastDate = new DateTime(2024, 11, 20, 6, 47, 4, 381, DateTimeKind.Utc).AddTicks(3412),
+                            ForecastDate = new DateTime(2024, 12, 25, 5, 40, 50, 28, DateTimeKind.Utc).AddTicks(6841),
                             ForecastedDemand = 1000,
                             ProductId = 1
                         },
                         new
                         {
                             Id = 2,
-                            ForecastDate = new DateTime(2024, 11, 20, 6, 47, 4, 381, DateTimeKind.Utc).AddTicks(3416),
+                            ForecastDate = new DateTime(2024, 12, 25, 5, 40, 50, 28, DateTimeKind.Utc).AddTicks(6846),
                             ForecastedDemand = 500,
                             ProductId = 2
                         });
@@ -4487,32 +4466,32 @@ namespace AenEnterprise.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5489),
-                            ModifiedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5492),
+                            CreatedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2032),
+                            ModifiedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2034),
                             RoleDescription = "Administrator with full access to system",
                             RoleName = "Admin"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5496),
-                            ModifiedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5497),
+                            CreatedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2037),
+                            ModifiedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2038),
                             RoleDescription = "Manager with access to oversee operations",
                             RoleName = "Manager"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5500),
-                            ModifiedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5500),
+                            CreatedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2040),
+                            ModifiedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2040),
                             RoleDescription = "Regular user with limited access",
                             RoleName = "User"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5502),
-                            ModifiedDate = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(5503),
+                            CreatedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2042),
+                            ModifiedDate = new DateTime(2024, 12, 25, 5, 40, 50, 59, DateTimeKind.Utc).AddTicks(2043),
                             RoleDescription = "Guest user with read-only access",
                             RoleName = "Guest"
                         });
@@ -4567,8 +4546,8 @@ namespace AenEnterprise.DataAccess.Migrations
                             PasswordHash = new byte[0],
                             PasswordSalt = new byte[0],
                             RefreshToken = "sample_refresh_token",
-                            TokenCreated = new DateTime(2024, 11, 20, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(2909),
-                            TokenExpires = new DateTime(2024, 11, 27, 6, 47, 4, 401, DateTimeKind.Utc).AddTicks(2913),
+                            TokenCreated = new DateTime(2024, 12, 25, 5, 40, 50, 58, DateTimeKind.Utc).AddTicks(9152),
+                            TokenExpires = new DateTime(2025, 1, 1, 5, 40, 50, 58, DateTimeKind.Utc).AddTicks(9155),
                             Username = "admin"
                         });
                 });
