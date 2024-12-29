@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AenEnterprise.DomainModel.AccountsAndFinance.AccountReceivable.SalesManagement;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,10 @@ namespace AenEnterprise.ServiceImplementations.MessageBroker
 {
     public class NotificationHub : Hub
     {
-        public async Task SendMessage(string message)
+        public async Task SendSalesOrderCreatedNotification(SalesOrder salesOrder)
         {
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            // Broadcast the notification to all connected clients
+            await Clients.All.SendAsync("SalesOrderCreatedNotification", salesOrder);
         }
     }
 }

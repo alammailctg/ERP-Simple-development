@@ -274,9 +274,10 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.AddSingleton<IMessagePublish, SalesOrderCreationNotificationPublisher>();
-builder.Services.AddSingleton<SalesOrderApprovalConsumer>();
-builder.Services.AddHostedService<SalesOrderApprovalConsumerBackgroundService>();
+//RabbitMQ Part
+builder.Services.AddSingleton<IMessagePublish, MessagePublish>();
+builder.Services.AddHostedService<RabbitMQListenerService>();
+
 
 builder.Services.AddSignalR();
 var app = builder.Build();

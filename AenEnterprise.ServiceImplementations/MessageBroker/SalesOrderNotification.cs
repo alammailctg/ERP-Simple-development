@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace AenEnterprise.ServiceImplementations.MessageBroker
 {
-    public class SalesOrderCreatedMessage
+    public class SalesOrderNotification
     {
-        public int SalesOrderId { get; set; }
+        public int OrderId { get; set; }
+        public string OrderNumber { get; set; }
         public string CustomerName { get; set; }
-        public string OrderedDate { get; set; }
-        public string SalesOrderNo { get; set; }
+        public DateTime OrderedDate { get; set; }
+        public decimal TotalAmount { get; set; }
     }
+
 }

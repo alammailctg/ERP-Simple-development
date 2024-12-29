@@ -84,7 +84,6 @@ namespace AenEnterprise.ServiceImplementations.Implementation.SalesOrderImplemen
         public async Task<GetSalesOrderResponse> CreateSalesOrderAsync(CreateSalesOrderRequest request)
         {
             var salesOrderId = await _redisDb.StringGetAsync("SalesOrderId");
-            //string salesOrderId = _cookieImplementation.Get(CookieDataKey.SalesOrderId.ToString());
             Product product = await _productRepository.GetByIdAsync(request.ProductId);
             Customer customer = await _customerRepository.GetByIdAsync(request.CustomerId);
             SalesOrderStatus salesOrderStatus = await _salesOrderStatusRepository.GetByIdAsync(request.SalesOrderStatusId);
@@ -93,26 +92,24 @@ namespace AenEnterprise.ServiceImplementations.Implementation.SalesOrderImplemen
             GetSalesOrderResponse response = new GetSalesOrderResponse();
             int lastOrderId = salesOrders.Any() ? salesOrders.Last().Id : 0;
             SalesOrder newSalesOrder = new SalesOrder();
-            _logger.LogInformation("Processing request parameter");
+
             if (salesOrderId.HasValue && int.TryParse(salesOrderId, out int orderId))
             {
                 SalesOrder salesOrder = await _salesOrderRepository.GetSalesOrderByIncludeId(orderId);
                 if (salesOrder == null)
                 {
                     throw new InvalidOperationException($"Sales order with ID {orderId} not found.");
-                    _logger.LogError($"Sales order with ID {orderId} not found.");
                 }
+
                 if (await OrderItemExistsWithSameProduct(salesOrder, product, request.Price))
                 {
                     throw new InvalidOperationException("Selected product already exists in the current order.");
-                    _logger.LogError("Selected product already exists in the current order.");
                 }
                 else
                 {
                     salesOrder.CreateOrderItem(request.ProductId, request.UnitId, request.Quantity, request.Price, request.DiscountPercent, 1, true);
                 }
                 await _salesOrderRepository.UpdateAsync(salesOrder);
-
                 response.SalesOrder = salesOrder.ConvertToSalesOrderView(_mapper, 1, true);
             }
             else
@@ -121,20 +118,21 @@ namespace AenEnterprise.ServiceImplementations.Implementation.SalesOrderImplemen
                 newSalesOrder.CreatedDate = DateTime.Now;
                 newSalesOrder.CustomerId = customer.Id;
                 newSalesOrder.Description = request.Description;
-                newSalesOrder.SalesOrderStatusId = 1; // Assuming default status
+                newSalesOrder.SalesOrderStatusId = 1; // Default status
                 newSalesOrder.DeliveryPlane = request.DeliveryPlane;
                 newSalesOrder.CreateOrderItem(product.Id, unit.Id, request.Quantity, request.Price, request.DiscountPercent, 1, true);
                 newSalesOrder.SalesOrderNo = lastOrderId > 0 ? "SO-" + (lastOrderId + 1).ToString() : "SO-1";
                 await _salesOrderRepository.AddAsync(newSalesOrder);
                 response.SalesOrder = newSalesOrder.ConvertToSalesOrderView(_mapper, 1, true);
-                await _redisDb.StringSetAsync("SalesOrderId", response.SalesOrder.Id.ToString(), TimeSpan.FromMinutes(5));
 
+                // Publish the sales order creation message to RabbitMQ
                 await _messagePublish.PublishSalesOrderCreatedMessage(newSalesOrder);
 
-                
+                await _redisDb.StringSetAsync("SalesOrderId", response.SalesOrder.Id.ToString(), TimeSpan.FromMinutes(5));
             }
             return response;
         }
+
         public async Task<bool> OrderItemExistsWithSameProduct(SalesOrder salesOrder, Product product, decimal price)
         {
             var orderItems = await _orderItemRepository.FindAsync(i => i.SalesOrderId == salesOrder.Id &&
